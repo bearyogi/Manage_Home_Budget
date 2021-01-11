@@ -1,5 +1,5 @@
 # Manage_Home_Budget
-Localhosted web application made for university lessons.
+Localhosted web application made for university lessons during 3rd year.
 
 Authors:
 - Michał Mamla
