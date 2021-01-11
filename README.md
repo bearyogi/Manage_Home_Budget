@@ -12,3 +12,5 @@ Techstack:
 - SpringBoot 2.4.1
 - MySQL JDBC
 - Lombok
+
+---Prerequirements---
