@@ -14,15 +14,11 @@ import javax.persistence.MappedSuperclass;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class Person {
+public abstract class ItemClass {
 
     @Id
     @GeneratedValue
     private Integer id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
 
     @Override
     public int hashCode() {
@@ -34,16 +30,14 @@ public abstract class Person {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Person)) {
+        if (!(obj instanceof ItemClass)) {
             return false; // null or other class
         }
-        Person other = (Person) obj;
+        ItemClass other = (ItemClass) obj;
 
         if (id != null) {
             return id.equals(other.id);
         }
         return super.equals(other);
     }
-
-
 }
