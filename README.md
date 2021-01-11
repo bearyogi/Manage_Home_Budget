@@ -14,3 +14,10 @@ Techstack:
 - Lombok
 
 ---Prerequirements---
+
+### Mysql configuration
+
+create database java_project_db   
+create user 'java_project_user'@'%' identified by 'java_project_password'  
+grant all on java_project_db.* to 'java_project_user'@'%';
+

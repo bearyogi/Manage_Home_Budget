@@ -1,5 +1,6 @@
 package com.university.project;
 
+import com.university.project.backend.entity.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
