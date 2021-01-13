@@ -9,7 +9,6 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -27,7 +26,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import java.util.Optional;
@@ -46,19 +44,19 @@ public class MainView extends AppLayout {
     private final AuthService authService;
     private final UserService userService;
     private User user;
-
+    ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
+        ThemeList themeList =  UI.getCurrent().getElement().getThemeList();
+        if(themeList.contains(Lumo.DARK)) themeList.remove(Lumo.DARK);
+        else themeList.add(Lumo.DARK);
+    });
     public MainView(AuthService authService, UserService userService) {
         this.authService = authService;
         this.userService = userService;
 
-        ToggleButton toggleButton = new ToggleButton("Przełącz ciemny tryb", click -> {
-          ThemeList themeList =  UI.getCurrent().getElement().getThemeList();
-           if(themeList.contains(Lumo.DARK)) themeList.remove(Lumo.DARK);
-           else themeList.add(Lumo.DARK);
-        });
+
 
         setPrimarySection(Section.DRAWER);
-        addToNavbar(true, createHeaderContent(),toggleButton);
+        addToNavbar(true, createHeaderContent());
         menu = createMenu();
         addToDrawer(createDrawerContent(menu));
     }
@@ -87,6 +85,7 @@ public class MainView extends AppLayout {
                 });
 
         layout.add(avatar);
+        layout.add(toggleButton);
         return layout;
     }
 
@@ -123,10 +122,13 @@ public class MainView extends AppLayout {
 
 
     private Component[] createMenuItems() {
-        User user = VaadinSession.getCurrent().getAttribute(User.class);
-        return authService.getAuthorizedRoutes().stream()
-                .map(r -> createTab(r.getName(), r.getView()))
-                .toArray(Component[]::new);
+//        return authService.getAuthorizedRoutes().stream()
+//                .map(r -> createTab(r.getName(), r.getView()))
+//                .toArray(Component[]::new);
+        return new Tab[]{
+                createTab("Home", HomeView.class),
+                createTab("Osobisty budżet", PersonalBudgetView.class),
+        };
     }
 
 
