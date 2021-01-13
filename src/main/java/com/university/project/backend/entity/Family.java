@@ -27,7 +27,7 @@ public class Family {
             CascadeType.PERSIST,
             CascadeType.REFRESH
     })
-    @JoinTable(name = "user_group",
+    @JoinTable(name = "user_family",
             joinColumns = @JoinColumn(name = "family_id"),
             inverseJoinColumns = @JoinColumn(name = "id"))
     private Set<User> users;
