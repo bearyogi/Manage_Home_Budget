@@ -20,6 +20,9 @@ public class User extends Person {
     private String passwordSalt;
     private String passwordHash;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Budget privateBudget;
+
     public User(String username, String plainPassword, String firstName, String lastName,
                 String email, String phone) {
         this.username = username;
@@ -29,6 +32,7 @@ public class User extends Person {
         this.setLastName(lastName);
         this.setEmail(email);
         this.setPhone(phone);
+        this.privateBudget = new Budget();
     }
 
     public boolean checkPassword(String plainPassword) {
