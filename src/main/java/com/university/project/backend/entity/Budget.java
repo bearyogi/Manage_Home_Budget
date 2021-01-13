@@ -1,2 +1,4 @@
-package com.university.project.backend.entity;public class Budget {
+package com.university.project.backend.entity;
+
+public class Budget {
 }

@@ -1,2 +1,4 @@
-package com.university.project.backend.entity;public enum ExpenseType {
+package com.university.project.backend.entity;
+
+public enum ExpenseType {
 }

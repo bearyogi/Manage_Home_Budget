@@ -65,6 +65,7 @@ public class RegisterView extends Composite {
                         phone.getValue()
                 )));
 
+        System.out.println("sdjjsd");
         verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         return verticalLayout;

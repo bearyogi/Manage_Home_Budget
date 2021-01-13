@@ -1,2 +1,4 @@
-package com.university.project.backend.entity;public class Group {
+package com.university.project.backend.entity;
+
+public class Group {
 }
