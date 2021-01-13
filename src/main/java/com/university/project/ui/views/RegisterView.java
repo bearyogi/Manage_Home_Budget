@@ -15,6 +15,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -72,14 +73,19 @@ public class RegisterView extends Composite {
 
     private void register(String username, String password, String confirmPassword, String firstName,
                           String lastName,String email, String phone) {
-
+       // EmailValidator.getInstance().isValid(email);
         if (username.trim().isEmpty()) {
             Notification.show("Enter a username");
         } else if(password.isEmpty()) {
             Notification.show("Enter a password");
         } else if(!password.equals(confirmPassword)) {
             Notification.show("Passwords don't match!");
-        } else {
+        } else if(!email.matches("^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$")){
+            Notification.show("Email is not true!");
+        }else if((phone.length() != 9)){
+            Notification.show("Phone number is not true!");
+        }
+        else {
             authService.register(username, password, firstName, lastName, email, phone);
             Notification.show("Registration succeeded.");
             try {
