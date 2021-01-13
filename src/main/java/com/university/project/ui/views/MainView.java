@@ -3,11 +3,13 @@ package com.university.project.ui.views;
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.AuthService;
 import com.university.project.backend.service.UserService;
+import com.vaadin.componentfactory.ToggleButton;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -20,10 +22,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 import java.util.Optional;
 
@@ -45,8 +50,15 @@ public class MainView extends AppLayout {
     public MainView(AuthService authService, UserService userService) {
         this.authService = authService;
         this.userService = userService;
+
+        ToggleButton toggleButton = new ToggleButton("Przełącz ciemny tryb", click -> {
+          ThemeList themeList =  UI.getCurrent().getElement().getThemeList();
+           if(themeList.contains(Lumo.DARK)) themeList.remove(Lumo.DARK);
+           else themeList.add(Lumo.DARK);
+        });
+
         setPrimarySection(Section.DRAWER);
-        addToNavbar(true, createHeaderContent());
+        addToNavbar(true, createHeaderContent(),toggleButton);
         menu = createMenu();
         addToDrawer(createDrawerContent(menu));
     }
@@ -79,7 +91,7 @@ public class MainView extends AppLayout {
     }
 
     private void logout() {
-        UI.getCurrent().getPage().setLocation("login");
+        UI.getCurrent().getPage().setLocation("");
         VaadinSession.getCurrent().getSession().invalidate();
         VaadinSession.getCurrent().close();
     }
