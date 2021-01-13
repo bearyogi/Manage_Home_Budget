@@ -14,7 +14,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 
 
-@Route(value = "login")
+@Route(value = "")
 @PageTitle("Login | BankAP  ")
 @CssImport("./styles/views/login/login-view.css")
 public class LoginView extends Div {
