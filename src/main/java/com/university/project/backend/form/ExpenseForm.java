@@ -18,12 +18,14 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
 
+import java.time.LocalDate;
+
 public class ExpenseForm extends FormLayout {
 
-    NumberField value = new NumberField("kwota");
-    TextField name = new TextField("nazwisko");
-    DatePicker date = new DatePicker("data");
-    ComboBox<ExpenseType> expenseType = new ComboBox<>("typ");
+    NumberField value = new NumberField("value");
+    TextField name = new TextField("name");
+    DatePicker date = new DatePicker("date");
+    ComboBox<ExpenseType> expenseType = new ComboBox<>("expenseType");
 
     Button save = new Button("Zapisz");
     Button delete = new Button("Usuń");
@@ -33,6 +35,12 @@ public class ExpenseForm extends FormLayout {
     private Expense expense;
 
     public ExpenseForm() {
+        expenseType.setItems(ExpenseType.values());
+        value.setValue(0.0);
+        name.setValue("opis");
+        date.setValue(LocalDate.now());
+        expenseType.setValue(ExpenseType.FAMILY);
+
         name.setRequired(true);
         date.setRequired(true);
         addClassName("expense-form");
@@ -45,11 +53,11 @@ public class ExpenseForm extends FormLayout {
                 date,
                 createButtonsLayout()
         );
-        expenseType.setItems(ExpenseType.values());
-        binder.forField(expenseType).withValidator(expenseType -> !expenseType.name().equals(""),"Typ nie może być pusty!").bind(Expense::getExpenseType, Expense::setExpenseType);
-        binder.forField(value).withValidator(value -> value.toString().length() > 0,"Kwota nie może być pusta!").bind(Expense::getValue, Expense::setValue);
-        binder.forField(name).withValidator(name -> name.length() > 0,"Tytuł nie może być puste!").bind(Expense::getName, Expense::setName);
-        binder.forField(date).withValidator(date -> !date.toString().equals(""),"Data nie może być pusta!").bind(Expense::getDate, Expense::setDate);
+
+        binder.forField(value).withValidator(value -> value != null && value.toString().length() > 0,"Kwota nie może być pusta!").bind(Expense::getValue, Expense::setValue);
+        binder.forField(name).withValidator(name -> name != null && name.length() > 0,"Tytuł nie może być pusty!").bind(Expense::getName, Expense::setName);
+        binder.forField(expenseType).withValidator(expenseType -> expenseType != null && !expenseType.name().equals(""),"Typ nie może być pusty!").bind(Expense::getExpenseType, Expense::setExpenseType);
+        binder.forField(date).withValidator(date -> date != null && !date.toString().isEmpty(),"Data nie może być pusta!").bind(Expense::getDate, Expense::setDate);
 
 
     }
@@ -77,7 +85,6 @@ public class ExpenseForm extends FormLayout {
     }
 
     private void validateAndSave() {
-        //System.out.println(date.toString());
         try {
             binder.writeBean(expense);
             fireEvent(new SaveEvent(this, expense));

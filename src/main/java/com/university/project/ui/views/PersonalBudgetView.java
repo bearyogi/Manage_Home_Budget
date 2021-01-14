@@ -1,6 +1,7 @@
 package com.university.project.ui.views;
 
 import com.university.project.backend.entity.Expense;
+import com.university.project.backend.entity.ExpenseType;
 import com.university.project.backend.entity.Income;
 import com.university.project.backend.entity.User;
 import com.university.project.backend.form.ExpenseForm;
@@ -10,12 +11,15 @@ import com.university.project.backend.service.IncomeService;
 import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -42,10 +46,10 @@ public class PersonalBudgetView extends Div {
   Grid<Expense> expenseGrid= new Grid<>(Expense.class);
   Grid<Income> incomeGrid = new Grid<>(Income.class);
 
-    TextField filterTextValue = new TextField();
+    NumberField filterTextValue = new NumberField();
     TextField filterTextName = new TextField();
-    TextField filterTextType = new TextField();
-    TextField filterTextDate = new TextField();
+    ComboBox filterTextType = new ComboBox();
+    DatePicker filterTextDate = new DatePicker();
     TextField filterTextUser = new TextField();
 
     public PersonalBudgetView(UserService userService, ExpenseService expenseService, IncomeService incomeService) {
@@ -58,16 +62,16 @@ public class PersonalBudgetView extends Div {
         setId("personal-view");
         setUpTabLayout();
         configureGrid();
-
+        filterTextType.setItems(ExpenseType.values());
         expenseForm = new ExpenseForm();
         expenseForm.addListener(ExpenseForm.SaveEvent.class, this::saveExpense);
         expenseForm.addListener(ExpenseForm.DeleteEvent.class, this::deleteExpense);
         expenseForm.addListener(ExpenseForm.CloseEvent.class, e -> closeEditor());
-
+        expenseGrid.setHeightByRows(true);
         HorizontalLayout content = new HorizontalLayout(expenseGrid, expenseForm);
         content.addClassName("content");
         content.setSizeFull();
-
+        content.setWidthFull();
         add(getToolBar(), content);
         updateList();
         closeEditor();
@@ -112,31 +116,23 @@ public class PersonalBudgetView extends Div {
 
         filterTextType.setPlaceholder("Filtruj typ");
         filterTextType.setClearButtonVisible(true);
-        filterTextType.setValueChangeMode(ValueChangeMode.LAZY);
         filterTextType.addValueChangeListener(e -> updateList());
 
         filterTextDate.setPlaceholder("Filtruj date");
         filterTextDate.setClearButtonVisible(true);
-        filterTextDate.setValueChangeMode(ValueChangeMode.LAZY);
         filterTextDate.addValueChangeListener(e -> updateList());
 
-        filterTextUser.setPlaceholder("Filtruj użytkownika");
-        filterTextUser.setClearButtonVisible(true);
-        filterTextUser.setValueChangeMode(ValueChangeMode.LAZY);
-        filterTextUser.addValueChangeListener(e -> updateList());
-
-
-        Button addSeansButton = new Button("Dodaj seans", click -> addExpense());
+        Button addExpenseButton = new Button("Dodaj wydatek", click -> addExpense());
         Button closeFormButton = new Button("Zamknij formularz", click -> closeEditor());
-        HorizontalLayout toolbar = new HorizontalLayout(filterTextValue,filterTextName,filterTextType,filterTextDate,filterTextUser,addSeansButton, closeFormButton);
-        //filterTextSala,filterTextFilm
+        HorizontalLayout toolbar = new HorizontalLayout(filterTextValue,filterTextName,filterTextType,filterTextDate,addExpenseButton, closeFormButton);
         toolbar.addClassName("toolbar");
+        toolbar.setWidthFull();
         return toolbar;
     }
 
     private void addExpense() {
         expenseGrid.asSingleSelect().clear();
-        editSeans(new Expense());
+        editExpense(new Expense());
     }
 
     private void configureGrid() {
@@ -146,10 +142,10 @@ public class PersonalBudgetView extends Div {
 
         expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
 
-        expenseGrid.asSingleSelect().addValueChangeListener(evt -> editSeans(evt.getValue()));
+        expenseGrid.asSingleSelect().addValueChangeListener(evt -> editExpense(evt.getValue()));
     }
 
-    private void editSeans(Expense expense) {
+    private void editExpense(Expense expense) {
         if (expense == null) {
             closeEditor();
         } else {
@@ -168,12 +164,10 @@ public class PersonalBudgetView extends Div {
     private void updateList() {
         List<Expense> list = new ArrayList<>();
         list.addAll(expenseService.getAll());
-//        list.addAll(ExpenseService.findAllLektor(filterTextLektor.getValue()));
-//        list.retainAll(seansService.findAllNapisy(filterTextNapisy.getValue()));
-//        list.retainAll(seansService.findAllData(filterTextData.getValue()));
-//        list.retainAll(seansService.findAllGodzina(filterTextGodzina.getValue()));
-//        list.retainAll(seansService.findAllSala(filterTextSala.getValue()));
-//        list.retainAll(seansService.findAllFilm(filterTextFilm.getValue()));
+        list.retainAll(expenseService.findAllValue(filterTextValue.getValue()));
+        list.retainAll(expenseService.findAllName(filterTextName.getValue()));
+        list.retainAll(expenseService.findAllDate(filterTextDate.getValue()));
+        list.retainAll(expenseService.findAllExpenseType(filterTextType.getValue()));
         expenseGrid.setItems(list);
     }
 

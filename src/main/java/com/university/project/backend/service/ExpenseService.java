@@ -5,6 +5,8 @@ import com.university.project.backend.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,5 +42,30 @@ public class ExpenseService implements Dao<Expense> {
     public List<Expense> getAll() {
         return expenseRepository.findAll();
     }
+    public List<Expense> findAllValue(Double data) {
+        if(data == null || data.toString().isEmpty()){
+            return expenseRepository.findAll();
+        }
+        return expenseRepository.findAllByValue(data);
+    }
 
+    public List<Expense> findAllName(String data) {
+        if(data == null || data.isEmpty()){
+            return expenseRepository.findAll();
+        }
+        return expenseRepository.findAllByName(data);
+    }
+    public List<Expense> findAllDate(LocalDate data) {
+        if(data == null || data.toString().isEmpty()){
+            return expenseRepository.findAll();
+        }
+        return expenseRepository.findAllByDate(data); }
+
+    public List<Expense> findAllExpenseType(Object data) {
+
+        if(data == null || data.toString().isEmpty()){
+            return expenseRepository.findAll();
+        }
+
+        return expenseRepository.findAllByExpenseType(data); }
 }
