@@ -1,9 +1,12 @@
 package com.university.project.ui.views;
 
 import com.university.project.backend.entity.User;
+import com.university.project.backend.form.ExpenseForm;
+import com.university.project.backend.form.IncomeForm;
 import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.html.Div;
+
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -20,17 +23,19 @@ public class PersonalBudgetView extends Div {
 
     private User user;
 
+  ExpenseForm expenseForm;
+  IncomeForm incomeForm;
+
     public PersonalBudgetView(UserService userService) {
         this.userService = userService;
 
         fetchFreshUser();
 
         setId("personal-view");
-        setUpLayoutWithUserCredentials();
-        //createTabs();
+        setUpTabLayout();
     }
 
-    private void setUpLayoutWithUserCredentials() {
+    private void setUpTabLayout() {
             HorizontalLayout layout = new HorizontalLayout();
             layout.setWidthFull();
             Tab tab1 = new Tab("Wydatki");
@@ -42,7 +47,9 @@ public class PersonalBudgetView extends Div {
             layout.add(tabs);
             add(layout);
     }
+    private void setUpGridLayout(){
 
+    }
 
     private void fetchFreshUser() {
         try {
