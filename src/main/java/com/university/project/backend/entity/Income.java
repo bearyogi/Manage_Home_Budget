@@ -24,7 +24,7 @@ public class Income {
 
     private String name;
     private double value;
-    private String incomeType;
+    private IncomeType incomeType;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate date;

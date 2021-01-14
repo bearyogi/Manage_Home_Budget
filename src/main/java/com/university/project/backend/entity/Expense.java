@@ -24,7 +24,7 @@ public class Expense{
 
     private String name;
     private double value;
-    private String expenseType;
+    private ExpenseType expenseType;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate date;
