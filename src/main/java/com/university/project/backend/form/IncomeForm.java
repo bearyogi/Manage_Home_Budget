@@ -18,12 +18,14 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
 
+import java.time.LocalDate;
+
 public class IncomeForm extends FormLayout {
 
-    NumberField kwota = new NumberField("kwota");
-    TextField tytul = new TextField("nazwisko");
-    DatePicker data = new DatePicker("data");
-    ComboBox<IncomeType> typ = new ComboBox<>("typ");
+    NumberField value = new NumberField("value");
+    TextField name = new TextField("name");
+    DatePicker date = new DatePicker("date");
+    ComboBox<IncomeType> incomeType = new ComboBox<>("incomeType");
 
     Button save = new Button("Zapisz");
     Button delete = new Button("Usuń");
@@ -33,23 +35,29 @@ public class IncomeForm extends FormLayout {
     private Income income;
 
     public IncomeForm() {
-        tytul.setRequired(true);
-        data.setRequired(true);
+        incomeType.setItems(IncomeType.values());
+        value.setValue(0.0);
+        name.setValue("opis");
+        date.setValue(LocalDate.now());
+        incomeType.setValue(IncomeType.BONUS);
+
+        name.setRequired(true);
+        date.setRequired(true);
         addClassName("income-form");
 
         binder.bindInstanceFields(this);
         add(
-                kwota,
-                tytul,
-                typ,
-                data,
+                value,
+                name,
+                incomeType,
+                date,
                 createButtonsLayout()
         );
-        typ.setItems(IncomeType.values());
-        binder.forField(typ).withValidator(typ -> !typ.equals(""),"Typ nie może być pusty!").bind(Income::getIncomeType, Income::setIncomeType);
-        binder.forField(kwota).withValidator(kwota -> kwota.toString().length() > 0,"Kwota nie może być pusta!").bind(Income::getValue, Income::setValue);
-        binder.forField(tytul).withValidator(tytul -> tytul.length() > 0,"Tytuł nie może być puste!").bind(Income::getName, Income::setName);
-        binder.forField(data).withValidator(data -> !data.equals(""),"Data nie może być pusta!").bind(Income::getDate, Income::setDate);
+
+        binder.forField(value).withValidator(value -> value != null && value.toString().length() > 0,"Kwota nie może być pusta!").bind(Income::getValue, Income::setValue);
+        binder.forField(name).withValidator(name -> name != null && name.length() > 0,"Tytuł nie może być pusty!").bind(Income::getName, Income::setName);
+        binder.forField(incomeType).withValidator(incomeType -> incomeType != null && !incomeType.name().equals(""),"Typ nie może być pusty!").bind(Income::getIncomeType, Income::setIncomeType);
+        binder.forField(date).withValidator(date -> date != null && !date.toString().isEmpty(),"Data nie może być pusta!").bind(Income::getDate, Income::setDate);
 
 
     }
@@ -77,7 +85,6 @@ public class IncomeForm extends FormLayout {
     }
 
     private void validateAndSave() {
-
         try {
             binder.writeBean(income);
             fireEvent(new SaveEvent(this, income));
