@@ -1,9 +1,6 @@
 package com.university.project.ui.views;
 
-import com.university.project.backend.entity.Expense;
-import com.university.project.backend.entity.ExpenseType;
-import com.university.project.backend.entity.Income;
-import com.university.project.backend.entity.User;
+import com.university.project.backend.entity.*;
 import com.university.project.backend.form.ExpenseForm;
 import com.university.project.backend.form.IncomeForm;
 import com.university.project.backend.service.ExpenseService;
@@ -21,6 +18,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -39,32 +37,44 @@ public class PersonalBudgetView extends Div {
 
     private User user;
 
-  ExpenseForm expenseForm;
-  IncomeForm incomeForm;
+    private ExpenseForm expenseForm;
+    private IncomeForm incomeForm;
 
-  ExpenseService expenseService;
-  IncomeService incomeService;
+    private ExpenseService expenseService;
+    private IncomeService incomeService;
 
-  Grid<Expense> expenseGrid= new Grid<>(Expense.class);
-  Grid<Income> incomeGrid = new Grid<>(Income.class);
+    private Grid<Expense> expenseGrid = new Grid<>(Expense.class);
+    private Grid<Income> incomeGrid = new Grid<>(Income.class);
 
-  NumberField filterTextValue = new NumberField();
-  TextField filterTextName = new TextField();
-  ComboBox filterTextType = new ComboBox();
-  DatePicker filterTextDate = new DatePicker();
+    private NumberField filterTextValue = new NumberField();
+    private TextField filterTextName = new TextField();
+    private ComboBox filterTextType = new ComboBox();
+    private DatePicker filterTextDate = new DatePicker();
 
-  Tabs tabs;
-    List<Integer> listExpenses = new ArrayList<>();
-    List<Integer> listIncomes= new ArrayList<>();
-    int totalExpenses;
+    private Tabs tabs;
+    private List<Integer> listExpenses = new ArrayList<>();
+    private List<Integer> listIncomes = new ArrayList<>();
+    private int totalExpenses;
+
+    private final H4 expenseTotal = new H4();
+    private final H4 expenseTransport = new H4();
+    private final H4 expenseHealth = new H4();
+    private final H4 expenseFamily = new H4();
+    private final H4 expenseGroceries = new H4();
+    private final H4 expenseGifts = new H4();
+    private final H4 expenseEducation = new H4();
+    private final H4 expenseHome = new H4();
+    private final H4 expenseHobby = new H4();
+
 
     public PersonalBudgetView(UserService userService, ExpenseService expenseService, IncomeService incomeService) {
+        addClassName("personal-view");
+
         this.userService = userService;
         this.expenseService = expenseService;
         this.incomeService = incomeService;
-
         fetchFreshUser();
-        setId("personal-view");
+
         setUpTabLayout();
         fillListExpenses();
         setUpTabPieChart();
@@ -85,84 +95,80 @@ public class PersonalBudgetView extends Div {
     }
 
     private void setUpTabLayout() {
-            HorizontalLayout layout = new HorizontalLayout();
-            layout.setWidthFull();
-            Tab tab1 = new Tab("Wydatki");
-            Tab tab2 = new Tab("Całość");
-            Tab tab3 = new Tab("Przychody");
-            tabs = new Tabs(tab1, tab2, tab3);
-            tabs.setWidthFull();
-            tabs.setFlexGrowForEnclosedTabs(1);
-            layout.add(tabs);
-            add(layout);
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setWidthFull();
+        Tab tab1 = new Tab("Wydatki");
+        Tab tab2 = new Tab("Całość");
+        Tab tab3 = new Tab("Przychody");
+        tabs = new Tabs(tab1, tab2, tab3);
+        tabs.setWidthFull();
+        tabs.setFlexGrowForEnclosedTabs(1);
+        layout.add(tabs);
+        add(layout);
     }
 
     private void setUpTabPieChart() {
 
-        HorizontalLayout layout = new HorizontalLayout();
         HorizontalLayout chartLayout = new HorizontalLayout();
         HorizontalLayout vLayout = new HorizontalLayout();
-        vLayout.setWidth("25%");
-        vLayout.setHeight("700");
+        vLayout.setWidth("75%");
+        vLayout.setHeight("50%");
         Chart chart = new Chart(ChartType.PIE);
         Configuration config = chart.getConfiguration();
         config.setTitle("Rozkład wydatków na typ:");
         config.setSubTitle("Twoje personalne/dla grupy xyz");
         DataSeries series = new DataSeries("Rozkład");
-        List<String> expenseName = Arrays.asList("Transport","Zdrowie","Rodzina","Zakupy","Prezenty","Edukacja","Dom","Hobby");
+        List<String> expenseName = Arrays.asList("Transport", "Zdrowie", "Rodzina", "Zakupy", "Prezenty", "Edukacja", "Dom", "Hobby");
 
-        for(int i=0;i<8;i++){
-            if(listExpenses.get(i) != 0) series.add(new DataSeriesItem(expenseName.get(i),listExpenses.get(i)));
+        for (int i = 0; i < 8; i++) {
+            if (listExpenses.get(i) != 0)
+                series.add(new DataSeriesItem(expenseName.get(i), listExpenses.get(i)));
         }
         config.addSeries(series);
 
-        H4 text = new H4();
-        text.setText("Wszystkie wydatki: " + totalExpenses);
-
-        H4 text1 = new H4();
-        text1.setText("test " + listExpenses.get(0));
-
-        H4 text2 = new H4();
-        text2.setText("test "+ listExpenses.get(1));
-
-        H4 text3 = new H4();
-        text3.setText("test "+ listExpenses.get(2));
-
-        H4 text4 = new H4();
-        text4.setText("test "+ listExpenses.get(3));
-
-        H4 text5 = new H4();
-        text5.setText("test "+ listExpenses.get(4));
-
-        H4 text6 = new H4();
-        text6.setText("test "+ listExpenses.get(5));
-
-        H4 text7 = new H4();
-        text7.setText("test "+ listExpenses.get(6));
-
-        H4 text8 = new H4();
-        text8.setText("test "+ listExpenses.get(7));
+        VerticalLayout vlExpensesWithValue = new VerticalLayout(
+                expenseTotal,
+                expenseTransport,
+                expenseHealth,
+                expenseFamily,
+                expenseGroceries,
+                expenseGifts,
+                expenseEducation,
+                expenseHome,
+                expenseHobby
+        );
+        setUpExpensesOrderByCategory();
 
         chartLayout.setAlignItems(FlexComponent.Alignment.START);
-        vLayout.add(text,text1,text2,text3,text4,text5,text6,text7,text8);
         chartLayout.add(chart);
-        layout.add(vLayout,chartLayout);
-        add(layout);
+        vLayout.add(vlExpensesWithValue, chartLayout);
+        add(vLayout);
     }
 
-    private void fillListIncomes(){
+    private void setUpExpensesOrderByCategory() {
+        expenseTotal.setText("Wszystkie wydatki: " + this.totalExpenses);
+        expenseTransport.setText("Transport " + listExpenses.get(0));
+        expenseHealth.setText("Zdrowie " + listExpenses.get(1));
+        expenseFamily.setText("Rodzina " + listExpenses.get(2));
+        expenseGroceries.setText("Zakupy " + listExpenses.get(3));
+        expenseGifts.setText("Prezenty " + listExpenses.get(4));
+        expenseEducation.setText("Edukacja " + listExpenses.get(5));
+        expenseHome.setText("Dom " + listExpenses.get(6));
+        expenseHobby.setText("Hobby " + listExpenses.get(7));
+    }
+
+    private void fillListIncomes() {
 
     }
 
-    private void fillListExpenses(){
+    private void fillListExpenses() {
         totalExpenses = 0;
-        for(ExpenseType element: ExpenseType.values()){
+        for (ExpenseType element : ExpenseType.values()) {
 
             int money = 0;
-            List<Expense> list = new ArrayList<>();
-            list.addAll(expenseService.findAllExpenseType(element));
-            for(int i=0;i<list.size();i++){
-                money += list.get(i).getValue();
+            List<Expense> list = new ArrayList<>(expenseService.findAllExpenseType(user.getPrivateBudget(), element));
+            for (Expense expense : list) {
+                money += expense.getValue();
             }
             totalExpenses += money;
             listExpenses.add(money);
@@ -176,7 +182,9 @@ public class PersonalBudgetView extends Div {
     }
 
     private void saveExpense(ExpenseForm.SaveEvent evt) {
-        expenseService.save(evt.getExpense());
+        Expense expenseToSave = evt.getExpense();
+        expenseToSave.setBudget(user.getPrivateBudget());
+        expenseService.save(expenseToSave);
         updateList();
         closeEditor();
     }
@@ -202,7 +210,7 @@ public class PersonalBudgetView extends Div {
 
         Button addExpenseButton = new Button("Dodaj wydatek", click -> addExpense());
         Button closeFormButton = new Button("Zamknij formularz", click -> closeEditor());
-        HorizontalLayout toolbar = new HorizontalLayout(filterTextValue,filterTextName,filterTextType,filterTextDate,addExpenseButton, closeFormButton);
+        HorizontalLayout toolbar = new HorizontalLayout(filterTextValue, filterTextName, filterTextType, filterTextDate, addExpenseButton, closeFormButton);
         toolbar.addClassName("toolbar");
         toolbar.setWidthFull();
         return toolbar;
@@ -216,7 +224,7 @@ public class PersonalBudgetView extends Div {
     private void configureGrid() {
         expenseGrid.addClassName("expense-grid");
         expenseGrid.setSizeFull();
-        expenseGrid.setColumns("value", "name","expenseType","date");
+        expenseGrid.setColumns("value", "name", "expenseType", "date");
 
         expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
 
@@ -240,12 +248,12 @@ public class PersonalBudgetView extends Div {
     }
 
     private void updateList() {
-        List<Expense> list = new ArrayList<>();
-        list.addAll(expenseService.getAll()); //TODO: add budget id restriction
-        list.retainAll(expenseService.findAllValue(filterTextValue.getValue()));
-        list.retainAll(expenseService.findAllName(filterTextName.getValue()));
-        list.retainAll(expenseService.findAllDate(filterTextDate.getValue()));
-        list.retainAll(expenseService.findAllExpenseType(filterTextType.getValue()));
+        Budget personalBudget = user.getPrivateBudget();
+        List<Expense> list = new ArrayList<>(expenseService.getAllByBudget(personalBudget));
+        list.retainAll(expenseService.getAllByValue(personalBudget, filterTextValue.getValue()));
+        list.retainAll(expenseService.findAllName(personalBudget, filterTextName.getValue()));
+        list.retainAll(expenseService.findAllDate(personalBudget, filterTextDate.getValue()));
+        list.retainAll(expenseService.findAllExpenseType(personalBudget, filterTextType.getValue()));
         expenseGrid.setItems(list);
     }
 

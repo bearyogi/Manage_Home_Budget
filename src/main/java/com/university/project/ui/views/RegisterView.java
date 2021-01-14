@@ -94,7 +94,7 @@ public class RegisterView extends Composite {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                UI.getCurrent().navigate("");
+                UI.getCurrent().navigate("login");
             }
         }
     }

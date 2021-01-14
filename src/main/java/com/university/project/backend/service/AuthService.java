@@ -4,8 +4,10 @@ import com.university.project.backend.entity.User;
 import com.university.project.backend.repository.UserRepository;
 import com.university.project.ui.views.HomeView;
 import com.university.project.ui.views.MainView;
+import com.university.project.ui.views.PersonalBudgetView;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +46,7 @@ public class AuthService {
         List<AuthorizedRoute> routes = new ArrayList<>();
 
         routes.add(new AuthorizedRoute("home", "Home", HomeView.class));
-/*        routes.add(new AuthorizedRoute("credentials", "Credentials", CredentialsView.class));
-        routes.add(new AuthorizedRoute("payments", "Payments", PaymentsView.class));
-        routes.add(new AuthorizedRoute("cards", "Cards", CardsView.class));
-        routes.add(new AuthorizedRoute("credits", "Credits", CreditView.class));
-
-        }*/
+        routes.add(new AuthorizedRoute("personal", "PersonalBudget", PersonalBudgetView.class));
 
         return routes;
     }

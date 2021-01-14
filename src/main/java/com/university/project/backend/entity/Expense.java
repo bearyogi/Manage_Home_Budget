@@ -29,12 +29,7 @@ public class Expense{
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate date;
 
-    @ManyToOne(cascade = {
-            CascadeType.MERGE,
-            CascadeType.DETACH,
-            CascadeType.PERSIST,
-            CascadeType.REFRESH
-    })
+    @ManyToOne
     private Budget budget;
 
     @Override

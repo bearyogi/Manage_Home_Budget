@@ -1,6 +1,5 @@
 package com.university.project.ui.views;
 
-import com.university.project.backend.entity.User;
 import com.university.project.backend.service.AuthService;
 import com.university.project.backend.service.UserService;
 import com.vaadin.componentfactory.ToggleButton;
@@ -36,24 +35,24 @@ import java.util.Optional;
  */
 @JsModule("./styles/shared-styles.js")
 @CssImport("./styles/views/main/main-view.css")
-@PWA(name = "BankAP", shortName = "BankAP", enableInstallPrompt = false)
+@PWA(name = "PersonalBudget", shortName = "Budget", enableInstallPrompt = false)
 public class MainView extends AppLayout {
 
     private final Tabs menu;
     private H1 viewTitle;
     private final AuthService authService;
-    private final UserService userService;
-    private User user;
-    ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
-        ThemeList themeList =  UI.getCurrent().getElement().getThemeList();
-        if(themeList.contains(Lumo.DARK)) themeList.remove(Lumo.DARK);
-        else themeList.add(Lumo.DARK);
+
+
+    private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+        if (themeList.contains(Lumo.DARK))
+            themeList.remove(Lumo.DARK);
+        else
+            themeList.add(Lumo.DARK);
     });
-    public MainView(AuthService authService, UserService userService) {
+
+    public MainView(AuthService authService) {
         this.authService = authService;
-        this.userService = userService;
-
-
 
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
@@ -90,7 +89,7 @@ public class MainView extends AppLayout {
     }
 
     private void logout() {
-        UI.getCurrent().getPage().setLocation("");
+        UI.getCurrent().getPage().setLocation("login");
         VaadinSession.getCurrent().getSession().invalidate();
         VaadinSession.getCurrent().close();
     }
@@ -105,8 +104,8 @@ public class MainView extends AppLayout {
         HorizontalLayout logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        logoLayout.add(new Image("images/logo.png", "BankAP logo"));
-        logoLayout.add(new H1("BankAP"));
+        logoLayout.add(new Image("images/logo.png", "ManageBudget logo"));
+        logoLayout.add(new H1("ManageBudget"));
         layout.add(logoLayout, menu);
         return layout;
     }
@@ -122,13 +121,9 @@ public class MainView extends AppLayout {
 
 
     private Component[] createMenuItems() {
-//        return authService.getAuthorizedRoutes().stream()
-//                .map(r -> createTab(r.getName(), r.getView()))
-//                .toArray(Component[]::new);
-        return new Tab[]{
-                createTab("Home", HomeView.class),
-                createTab("Osobisty budżet", PersonalBudgetView.class),
-        };
+        return authService.getAuthorizedRoutes().stream()
+                .map(r -> createTab(r.getName(), r.getView()))
+                .toArray(Component[]::new);
     }
 
 
