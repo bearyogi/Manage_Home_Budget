@@ -18,7 +18,7 @@ import com.vaadin.flow.theme.lumo.Lumo;
 
 
 @Route(value = "")
-@PageTitle("Login | BankAP  ")
+@PageTitle("Login | ManageBudget  ")
 @CssImport("./styles/views/login/login-view.css")
 public class LoginView extends Div {
 

@@ -18,12 +18,9 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -244,7 +241,7 @@ public class PersonalBudgetView extends Div {
 
     private void updateList() {
         List<Expense> list = new ArrayList<>();
-        list.addAll(expenseService.getAll());
+        list.addAll(expenseService.getAll()); //TODO: add budget id restriction
         list.retainAll(expenseService.findAllValue(filterTextValue.getValue()));
         list.retainAll(expenseService.findAllName(filterTextName.getValue()));
         list.retainAll(expenseService.findAllDate(filterTextDate.getValue()));
