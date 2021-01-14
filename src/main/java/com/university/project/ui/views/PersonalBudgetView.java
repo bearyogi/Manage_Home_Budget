@@ -19,6 +19,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -58,6 +59,7 @@ public class PersonalBudgetView extends Div {
   Tabs tabs;
     List<Integer> listExpenses = new ArrayList<>();
     List<Integer> listIncomes= new ArrayList<>();
+    int totalExpenses;
 
     public PersonalBudgetView(UserService userService, ExpenseService expenseService, IncomeService incomeService) {
         this.userService = userService;
@@ -104,7 +106,7 @@ public class PersonalBudgetView extends Div {
         HorizontalLayout chartLayout = new HorizontalLayout();
         HorizontalLayout vLayout = new HorizontalLayout();
         vLayout.setWidth("25%");
-        vLayout.setHeightFull();
+        vLayout.setHeight("700");
         Chart chart = new Chart(ChartType.PIE);
         Configuration config = chart.getConfiguration();
         config.setTitle("Rozkład wydatków na typ:");
@@ -117,14 +119,35 @@ public class PersonalBudgetView extends Div {
         }
         config.addSeries(series);
 
-        Label text = new Label();
-        text.setText("test");
-        Label text1 = new Label();
-        text.setText("test");
-        Label text2 = new Label();
-        text.setText("test");
+        H4 text = new H4();
+        text.setText("Wszystkie wydatki: " + totalExpenses);
+
+        H4 text1 = new H4();
+        text1.setText("test " + listExpenses.get(0));
+
+        H4 text2 = new H4();
+        text2.setText("test "+ listExpenses.get(1));
+
+        H4 text3 = new H4();
+        text3.setText("test "+ listExpenses.get(2));
+
+        H4 text4 = new H4();
+        text4.setText("test "+ listExpenses.get(3));
+
+        H4 text5 = new H4();
+        text5.setText("test "+ listExpenses.get(4));
+
+        H4 text6 = new H4();
+        text6.setText("test "+ listExpenses.get(5));
+
+        H4 text7 = new H4();
+        text7.setText("test "+ listExpenses.get(6));
+
+        H4 text8 = new H4();
+        text8.setText("test "+ listExpenses.get(7));
+
         chartLayout.setAlignItems(FlexComponent.Alignment.START);
-        vLayout.add(text,text1,text2);
+        vLayout.add(text,text1,text2,text3,text4,text5,text6,text7,text8);
         chartLayout.add(chart);
         layout.add(vLayout,chartLayout);
         add(layout);
@@ -135,13 +158,16 @@ public class PersonalBudgetView extends Div {
     }
 
     private void fillListExpenses(){
+        totalExpenses = 0;
         for(ExpenseType element: ExpenseType.values()){
+
             int money = 0;
             List<Expense> list = new ArrayList<>();
             list.addAll(expenseService.findAllExpenseType(element));
             for(int i=0;i<list.size();i++){
                 money += list.get(i).getValue();
             }
+            totalExpenses += money;
             listExpenses.add(money);
         }
     }
