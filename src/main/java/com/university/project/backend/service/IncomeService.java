@@ -67,6 +67,6 @@ public class IncomeService implements Dao<Income> {
             return incomeRepository.findAll();
         }
 
-        return incomeRepository.findAllByExpenseType(data); }
+        return incomeRepository.findAllByIncomeType(data); }
 
 }
