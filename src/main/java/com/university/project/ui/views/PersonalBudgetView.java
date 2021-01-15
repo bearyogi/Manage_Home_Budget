@@ -16,6 +16,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -189,6 +190,17 @@ public class PersonalBudgetView extends Div {
 
     private void setUpTotalLayout() {
         //TODO TotalLayout do zrobienia
+        var balance = roundOff(totalIncomes - totalExpenses);
+        H2 balanceLabel = new H2("Saldo " + (balance));
+        H4 incomesLabel = new H4("Przychody " + totalIncomes);
+        H4 expensesLabel = new H4("Wydatki " + totalExpenses);
+
+        mainLayoutTotal.add(
+                balanceLabel,
+                incomesLabel,
+                expensesLabel
+        );
+        mainLayoutTotal.setAlignItems(FlexComponent.Alignment.CENTER);
     }
 
 
