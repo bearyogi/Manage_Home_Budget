@@ -119,11 +119,14 @@ public class PersonalBudgetView extends Div {
         config.setSubTitle("Twoje personalne/dla grupy xyz");
         DataSeries series = new DataSeries("Rozkład");
         List<String> expenseName = Arrays.asList("Transport", "Zdrowie", "Rodzina", "Zakupy", "Prezenty", "Edukacja", "Dom", "Hobby");
-
+        boolean flag = false;
         for (int i = 0; i < 8; i++) {
-            if (listExpenses.get(i) != 0)
+            if (listExpenses.get(i) != 0){
                 series.add(new DataSeriesItem(expenseName.get(i), listExpenses.get(i)));
+                flag = true;
+            }
         }
+        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
         config.addSeries(series);
 
         VerticalLayout vlExpensesWithValue = new VerticalLayout(
