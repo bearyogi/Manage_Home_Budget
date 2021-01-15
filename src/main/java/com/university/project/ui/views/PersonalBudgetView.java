@@ -189,7 +189,6 @@ public class PersonalBudgetView extends Div {
     }
 
     private void setUpTotalLayout() {
-        //TODO TotalLayout do zrobienia
         var balance = roundOff(totalIncomes - totalExpenses);
         H2 balanceLabel = new H2("Saldo " + (balance));
         H4 incomesLabel = new H4("Przychody " + totalIncomes);
