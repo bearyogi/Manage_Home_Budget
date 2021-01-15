@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,6 +18,8 @@ public class Family {
     @Id
     @GeneratedValue
     private Integer familyId;
+
+    private String familyName;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Budget budget;
@@ -30,7 +33,7 @@ public class Family {
     @JoinTable(name = "user_family",
             joinColumns = @JoinColumn(name = "family_id"),
             inverseJoinColumns = @JoinColumn(name = "id"))
-    private Set<User> users;
+    private Set<User> users = new HashSet<>();
 
     @Override
     public int hashCode() {
@@ -51,5 +54,13 @@ public class Family {
             return familyId.equals(other.familyId);
         }
         return super.equals(other);
+    }
+
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
+    public void removeUser(User user) {
+        this.users.remove(user);
     }
 }
