@@ -269,12 +269,14 @@ public class PersonalBudgetView extends Div {
 
     private void updateExpenseChartData() {
         DataSeries series = new DataSeries();
+        boolean flag = false;
         for (int i = 0; i < 8; i++) {
             if (listExpenses.get(i) != 0) {
                 series.add(new DataSeriesItem(expenseTypes.get(i), listExpenses.get(i)));
+                flag = true;
             }
         }
-
+        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
         Configuration config = chartExpenses.getConfiguration();
         config.setTitle("Rozkład wydatków względem typu:");
         config.setSeries(series);
@@ -520,14 +522,15 @@ public class PersonalBudgetView extends Div {
 
     private void updateIncomeChartData() {
         DataSeries series = new DataSeries();
+        boolean flag = false;
         for (int i = 0; i < IncomeType.values().length; i++) {
             if (listIncomes.get(i) != 0.0) {
                 series.add(new DataSeriesItem(incomeTypes.get(i), listIncomes.get(i)));
+                flag = true;
             }
         }
-
+        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów",1));
         Configuration config = chartIncomes.getConfiguration();
-        config.setTitle("Rozkład przychodow względem typu:");
         config.setTitle("Rozkład przychodow względem typu:");
         config.setSeries(series);
         chartIncomes.drawChart();
