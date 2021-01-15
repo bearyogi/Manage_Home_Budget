@@ -1,5 +1,6 @@
 package com.university.project.backend.service;
 
+import com.university.project.backend.entity.Budget;
 import com.university.project.backend.entity.Expense;
 import com.university.project.backend.entity.Income;
 import com.university.project.backend.repository.IncomeRepository;
@@ -42,19 +43,24 @@ public class IncomeService implements Dao<Income> {
     public List<Income> getAll() {
         return incomeRepository.findAll();
     }
+
+    public List<Income> getAllByBudget(Budget privateBudget) {
+        return incomeRepository.findAllByBudget(privateBudget);
+    }
+
     public List<Income> findAllValue(Double data) {
         if(data == null || data.toString().isEmpty()){
             return incomeRepository.findAll();
         }
         return incomeRepository.findAllByValue(data);
     }
-
     public List<Income> findAllName(String data) {
         if(data == null || data.isEmpty()){
             return incomeRepository.findAll();
         }
         return incomeRepository.findAllByName(data);
     }
+
     public List<Income> findAllDate(LocalDate data) {
         if(data == null || data.toString().isEmpty()){
             return incomeRepository.findAll();
@@ -68,5 +74,4 @@ public class IncomeService implements Dao<Income> {
         }
 
         return incomeRepository.findAllByIncomeType(data); }
-
 }

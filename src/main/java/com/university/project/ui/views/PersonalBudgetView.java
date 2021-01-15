@@ -17,7 +17,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 
 import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -41,11 +40,10 @@ import static com.university.project.utils.TransformUtils.*;
 @PageTitle("PersonalBudget")
 public class PersonalBudgetView extends Div {
     private final UserService userService;
-
     private User user;
 
     private final ExpenseForm expenseForm = new ExpenseForm();
-    private IncomeForm incomeForm;
+    private final IncomeForm incomeForm = new IncomeForm();
 
     private final ExpenseService expenseService;
     private final IncomeService incomeService;
@@ -53,16 +51,28 @@ public class PersonalBudgetView extends Div {
     private final Grid<Expense> expenseGrid = new Grid<>(Expense.class);
     private final Grid<Income> incomeGrid = new Grid<>(Income.class);
 
-    private NumberField filterTextValue = new NumberField();
-    private TextField filterTextName = new TextField();
-    private ComboBox filterTextType = new ComboBox();
-    private DatePicker filterTextDate = new DatePicker();
+    private final NumberField filterExpenseValue = new NumberField();
+    private final TextField filterExpenseName = new TextField();
+    private final ComboBox filterExpenseType = new ComboBox();
+    private final DatePicker filterExpenseDate = new DatePicker();
+
+    private final NumberField filterIncomeValue = new NumberField();
+    private final TextField filterIncomeName = new TextField();
+    private final ComboBox filterIncomeType = new ComboBox();
+    private final DatePicker filterIncomeDate = new DatePicker();
+
 
     private final Tab tabExpenses = new Tab("Wydatki");
     private final Tab tabIncomes = new Tab("Przychody");
     private final Tab tabTotal = new Tab("Całość");
     private final Tabs tabs = new Tabs(tabExpenses, tabIncomes, tabTotal);
+    private final VerticalLayout mainLayoutExpenses = new VerticalLayout();
+    private final VerticalLayout mainLayoutIncomes = new VerticalLayout();
+    private final VerticalLayout mainLayoutTotal = new VerticalLayout();
+    private final Div pages = new Div(mainLayoutExpenses, mainLayoutIncomes, mainLayoutTotal);
+
     private final Button addExpenseButton = new Button("Dodaj wydatek", new Icon(VaadinIcon.ARROW_RIGHT));
+    private final Button addIncomeButton = new Button("Dodaj przychód", new Icon(VaadinIcon.ARROW_LEFT));
 
     private List<Double> listExpenses = new ArrayList<>();
     private List<Double> listIncomes = new ArrayList<>();
@@ -70,9 +80,12 @@ public class PersonalBudgetView extends Div {
     private double totalIncomes = 0.0;
 
     private List<Expense> allExpenses = new ArrayList<>();
+    private List<Income> allIncomes = new ArrayList<>();
     private final List<String> expenseTypes = Arrays.asList("Transport", "Zdrowie", "Rodzina", "Zakupy", "Prezenty", "Edukacja", "Dom", "Hobby");
-    private final Chart chartExpenses = new Chart(ChartType.PIE);
+    private final List<String> incomeTypes = Arrays.asList("Pensja", "Premia", "Prezent", "Zwrot");
 
+    private final Chart chartExpenses = new Chart(ChartType.PIE);
+    private final Chart chartIncomes = new Chart(ChartType.PIE);
 
     private final H4 expenseTotal = new H4();
     private final H4 expenseTransport = new H4();
@@ -84,6 +97,12 @@ public class PersonalBudgetView extends Div {
     private final H4 expenseHome = new H4();
     private final H4 expenseHobby = new H4();
 
+    private final H4 incomeTotal = new H4();
+    private final H4 incomeSalary = new H4();
+    private final H4 incomeBonus = new H4();
+    private final H4 incomeGift = new H4();
+    private final H4 incomeReturn = new H4();
+
 
     public PersonalBudgetView(UserService userService, ExpenseService expenseService, IncomeService incomeService) {
         addClassName("personal-view");
@@ -93,46 +112,94 @@ public class PersonalBudgetView extends Div {
         this.incomeService = incomeService;
         fetchFreshUser();
         fetchAllUserExpenses();
+        fetchAllUserIncomes();
 
-        setUpTabLayout();
-        fillUpListOfExpensesPerType();
-        setUpExpensePieChart();
-        configureGrid();
+        setUpTabs();
+        setUpExpenseLayout();
+        setUpIncomeLayout();
+        setUpTotalLayout();
 
-        filterTextType.setItems(ExpenseType.values());
-        expenseForm.addListener(ExpenseForm.SaveEvent.class, this::saveExpense);
-        expenseForm.addListener(ExpenseForm.DeleteEvent.class, this::deleteExpense);
-        expenseForm.addListener(ExpenseForm.CloseEvent.class, e -> closeEditor());
-        expenseGrid.setHeightByRows(true);
-
-        HorizontalLayout content = new HorizontalLayout(expenseGrid, expenseForm);
-        content.addClassName("content");
-        content.setSizeFull();
-        content.setWidthFull();
-        add(getToolBar(), content);
-        closeEditor();
     }
 
     private void fetchAllUserExpenses() {
         allExpenses = expenseService.getAllByBudget(user.getPrivateBudget());
     }
 
-    private void setUpTabLayout() {
-        tabs.setWidthFull();
-        tabs.setFlexGrowForEnclosedTabs(1);
-        add(tabs);
+    private void fetchAllUserIncomes() {
+        allIncomes = incomeService.getAllByBudget(user.getPrivateBudget());
     }
 
-    private void fillUpListOfExpensesPerType() {
-        totalExpenses = 0.0;
-        listExpenses.clear();
+    private void setUpTabs() {
+        Map<Tab, Component> tabsToPages = new HashMap<>();
+        tabsToPages.put(tabExpenses, mainLayoutExpenses);
+        tabsToPages.put(tabIncomes, mainLayoutIncomes);
+        tabsToPages.put(tabTotal, mainLayoutTotal);
 
-        for (ExpenseType element : ExpenseType.values()) {
-            List<Expense> filteredList = allExpenses.stream().filter(expense -> expense.getExpenseType() == element).collect(Collectors.toList());
-            var expensePerType = filteredList.stream().mapToDouble(Expense::getValue).sum();
-            totalExpenses += expensePerType;
-            listExpenses.add(expensePerType);
-        }
+        tabs.setWidthFull();
+        tabs.setFlexGrowForEnclosedTabs(1);
+        pages.setSizeFull();
+
+        tabs.addSelectedChangeListener(event -> {
+           tabsToPages.values().forEach(page -> page.setVisible(false));
+           Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
+           selectedPage.setVisible(true);
+        });
+
+        add(tabs, pages);
+
+        //TODO przy pierwszym uruchomieniu zakladki zeby wybieralo od razu ExpenseTab
+        //nie dziala to ponizsze
+        //tabs.setSelectedIndex(0);
+    }
+
+    private void setUpExpenseLayout() {
+        configureExpenseGrid();
+        setUpExpensePieChart();
+
+        filterExpenseType.setItems(ExpenseType.values());
+        expenseForm.addListener(ExpenseForm.SaveEvent.class, this::saveExpense);
+        expenseForm.addListener(ExpenseForm.DeleteEvent.class, this::deleteExpense);
+        expenseForm.addListener(ExpenseForm.CloseEvent.class, e -> closeExpenseEditor());
+        expenseGrid.setHeightByRows(true);
+
+        HorizontalLayout content = new HorizontalLayout(expenseGrid, expenseForm);
+        content.addClassName("content");
+        content.setSizeFull();
+        content.setWidthFull();
+        mainLayoutExpenses.add(getExpenseToolBar(), content);
+        closeExpenseEditor();
+    }
+
+    private void setUpIncomeLayout() {
+        configureIncomeGrid();
+        setUpIncomePieChart();
+
+        filterIncomeType.setItems(IncomeType.values());
+        incomeForm.addListener(IncomeForm.SaveEvent.class, this::saveIncome);
+        incomeForm.addListener(IncomeForm.DeleteEvent.class, this::deleteIncome);
+        incomeForm.addListener(IncomeForm.CloseEvent.class, e -> closeIncomeEditor());
+        incomeGrid.setHeightByRows(true);
+
+        HorizontalLayout content = new HorizontalLayout(incomeGrid, incomeForm);
+        content.setSizeFull();
+        content.setWidthFull();
+        mainLayoutIncomes.add(getIncomeToolBar(), content);
+        closeIncomeEditor();
+    }
+
+    private void setUpTotalLayout() {
+        //TODO TotalLayout do zrobienia
+    }
+
+
+    private void configureExpenseGrid() {
+        expenseGrid.addClassName("expense-grid");
+        expenseGrid.setSizeFull();
+        expenseGrid.setColumns("name", "value", "expenseType", "date");
+
+        expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+        expenseGrid.asSingleSelect().addValueChangeListener(evt -> editExpense(evt.getValue()));
+        expenseGrid.setItems(allExpenses);
     }
 
     private void setUpExpensePieChart() {
@@ -151,7 +218,8 @@ public class PersonalBudgetView extends Div {
                 expenseHome,
                 expenseHobby
         );
-        setUpExpensesOrderByCategoryInVL();
+        fillUpListOfExpensesPerType();
+        setUpExpensesDividedByCategoryInVL();
 
         HorizontalLayout chartLayout = new HorizontalLayout();
         chartLayout.setAlignItems(FlexComponent.Alignment.START);
@@ -160,10 +228,22 @@ public class PersonalBudgetView extends Div {
 
         chartLayout.add(chartExpenses);
         wrapperOnVLAndChart.add(vlExpensesWithValue, chartLayout);
-        add(wrapperOnVLAndChart);
+        mainLayoutExpenses.add(wrapperOnVLAndChart);
     }
 
-    private void setUpExpensesOrderByCategoryInVL() {
+    private void fillUpListOfExpensesPerType() {
+        totalExpenses = 0.0;
+        listExpenses.clear();
+
+        for (ExpenseType element : ExpenseType.values()) {
+            List<Expense> filteredList = allExpenses.stream().filter(expense -> expense.getExpenseType() == element).collect(Collectors.toList());
+            var expensePerType = filteredList.stream().mapToDouble(Expense::getValue).sum();
+            totalExpenses += expensePerType;
+            listExpenses.add(expensePerType);
+        }
+    }
+
+    private void setUpExpensesDividedByCategoryInVL() {
 
         expenseTotal.setText("Wszystkie wydatki: " + roundOff(totalExpenses));
         expenseTransport.setText("Transport " + listExpenses.get(0));
@@ -177,13 +257,6 @@ public class PersonalBudgetView extends Div {
     }
 
     private void updateExpenseChartData() {
-/*
-        Configuration config = chartExpenses.getConfiguration();
-
-        config.setTitle("Rozkład wydatków względem typu:");
-        config.setSubTitle("Twoje wydatki");
-*/
-
         DataSeries series = new DataSeries();
         for (int i = 0; i < 8; i++) {
             if (listExpenses.get(i) != 0) {
@@ -197,89 +270,70 @@ public class PersonalBudgetView extends Div {
         chartExpenses.drawChart();
     }
 
-    private void fillListIncomes() {
-        //TODO list of incomes
-    }
-
-    private void configureGrid() {
-        expenseGrid.addClassName("expense-grid");
-        expenseGrid.setSizeFull();
-        expenseGrid.setColumns("value", "name", "expenseType", "date");
-
-        expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
-        expenseGrid.asSingleSelect().addValueChangeListener(evt -> editExpense(evt.getValue()));
-        expenseGrid.setItems(allExpenses);
-    }
-
     private void saveExpense(ExpenseForm.SaveEvent evt) {
         Expense expenseToSave = evt.getExpense();
         expenseToSave.setBudget(user.getPrivateBudget());
         expenseService.save(expenseToSave);
 
         refreshAllExpensesViews();
-        closeEditor();
+        closeExpenseEditor();
     }
 
     private void deleteExpense(ExpenseForm.DeleteEvent evt) {
         expenseService.delete(evt.getExpense());
         refreshAllExpensesViews();
-        closeEditor();
+        closeExpenseEditor();
     }
 
     private void refreshAllExpensesViews() {
         fetchAllUserExpenses();
-        updateList();
+        updateListOfExpenses();
         fillUpListOfExpensesPerType();
-        setUpExpensesOrderByCategoryInVL();
+        setUpExpensesDividedByCategoryInVL();
         updateExpenseChartData();
     }
 
-    private HorizontalLayout getToolBar() {
-        filterTextValue.setPlaceholder("Filtruj kwote");
-        filterTextValue.setClearButtonVisible(true);
-        filterTextValue.setValueChangeMode(ValueChangeMode.LAZY);
-        filterTextValue.addValueChangeListener(e -> updateList());
+    private HorizontalLayout getExpenseToolBar() {
+        filterExpenseValue.setPlaceholder("Filtruj kwote");
+        filterExpenseValue.setClearButtonVisible(true);
+        filterExpenseValue.setValueChangeMode(ValueChangeMode.LAZY);
+        filterExpenseValue.addValueChangeListener(e -> updateListOfExpenses());
 
-        filterTextName.setPlaceholder("Filtruj opis");
-        filterTextName.setClearButtonVisible(true);
-        filterTextName.setValueChangeMode(ValueChangeMode.LAZY);
-        filterTextName.addValueChangeListener(e -> updateList());
+        filterExpenseName.setPlaceholder("Filtruj opis");
+        filterExpenseName.setClearButtonVisible(true);
+        filterExpenseName.setValueChangeMode(ValueChangeMode.LAZY);
+        filterExpenseName.addValueChangeListener(e -> updateListOfExpenses());
 
-        filterTextType.setPlaceholder("Filtruj typ");
-        filterTextType.setClearButtonVisible(true);
-        filterTextType.addValueChangeListener(e -> updateList());
+        filterExpenseType.setPlaceholder("Filtruj typ");
+        filterExpenseType.setClearButtonVisible(true);
+        filterExpenseType.addValueChangeListener(e -> updateListOfExpenses());
 
-        filterTextDate.setPlaceholder("Filtruj date");
-        filterTextDate.setClearButtonVisible(true);
-        filterTextDate.addValueChangeListener(e -> updateList());
+        filterExpenseDate.setPlaceholder("Filtruj date");
+        filterExpenseDate.setClearButtonVisible(true);
+        filterExpenseDate.addValueChangeListener(e -> updateListOfExpenses());
 
         addExpenseButton.addClickListener(click -> {
             if (expenseForm.isVisible()) {
-                closeEditor();
+                closeExpenseEditor();
                 click.getSource().setText("Dodaj wydatek");
                 click.getSource().setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
             } else {
-                openEditor();
+                openExpenseEditor();
                 click.getSource().setText("Zamknij fromularz");
                 click.getSource().setIcon(new Icon(VaadinIcon.ARROW_LEFT));
             }
         });
         addExpenseButton.setIconAfterText(true);
 
-        HorizontalLayout toolbar = new HorizontalLayout(filterTextValue, filterTextName, filterTextType, filterTextDate, addExpenseButton);
+        HorizontalLayout toolbar = new HorizontalLayout(filterExpenseValue, filterExpenseName, filterExpenseType, filterExpenseDate, addExpenseButton);
         toolbar.addClassName("toolbar");
         toolbar.setWidthFull();
         return toolbar;
     }
 
-    private void openEditor() {
-        expenseGrid.asSingleSelect().clear();
-        editExpense(new Expense());
-    }
-
     private void editExpense(Expense expense) {
         if (expense == null) {
-            closeEditor();
+            closeExpenseEditor();
         } else {
             expenseForm.setExpense(expense);
             expenseForm.setVisible(true);
@@ -287,7 +341,12 @@ public class PersonalBudgetView extends Div {
         }
     }
 
-    private void closeEditor() {
+    private void openExpenseEditor() {
+        expenseGrid.asSingleSelect().clear();
+        editExpense(new Expense());
+    }
+
+    private void closeExpenseEditor() {
         expenseForm.setExpense(null);
         expenseForm.setVisible(false);
         removeClassName("editing");
@@ -296,19 +355,187 @@ public class PersonalBudgetView extends Div {
         addExpenseButton.setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
     }
 
-    private void updateList() {
+    private void updateListOfExpenses() {
         List<Expense> filteredList = new ArrayList<>(allExpenses);
-        if (filterTextValue.getValue() != null && filterTextValue.getValue() != 0.0)
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getValue() == filterTextValue.getValue()).collect(Collectors.toUnmodifiableList()));
-        if (filterTextName.getValue() != null && !filterTextName.getValue().isEmpty())
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getName().equalsIgnoreCase(filterTextName.getValue())).collect(Collectors.toUnmodifiableList()));
-        if (filterTextDate.getValue() != null && !filterTextDate.getValue().toString().isEmpty())
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getDate().equals(filterTextDate.getValue())).collect(Collectors.toUnmodifiableList()));
-        if (filterTextType.getValue() != null && !filterTextType.getValue().toString().isEmpty())
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getExpenseType() == filterTextType.getValue()).collect(Collectors.toUnmodifiableList()));
+        if (filterExpenseValue.getValue() != null && filterExpenseValue.getValue() != 0.0)
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getValue() == filterExpenseValue.getValue()).collect(Collectors.toUnmodifiableList()));
+        if (filterExpenseName.getValue() != null && !filterExpenseName.getValue().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getName().equalsIgnoreCase(filterExpenseName.getValue())).collect(Collectors.toUnmodifiableList()));
+        if (filterExpenseDate.getValue() != null && !filterExpenseDate.getValue().toString().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getDate().equals(filterExpenseDate.getValue())).collect(Collectors.toUnmodifiableList()));
+        if (filterExpenseType.getValue() != null && !filterExpenseType.getValue().toString().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getExpenseType() == filterExpenseType.getValue()).collect(Collectors.toUnmodifiableList()));
         //System.out.println("Filtered list size = " + filteredList.size());
         expenseGrid.setItems(filteredList);
     }
+
+    // Incomes
+    private void configureIncomeGrid() {
+        incomeGrid.addClassName("income-grid");
+        incomeGrid.setSizeFull();
+        incomeGrid.setColumns("name", "value", "incomeType", "date");
+
+        incomeGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+        incomeGrid.asSingleSelect().addValueChangeListener(event -> editIncome(event.getValue()));
+        incomeGrid.setItems(allIncomes);
+    }
+
+    private void saveIncome(IncomeForm.SaveEvent evt) {
+        Income incomeToSave = evt.getIncome();
+        incomeToSave.setBudget(user.getPrivateBudget());
+        incomeService.save(incomeToSave);
+
+        refreshAllIncomeViews();
+        closeIncomeEditor();
+    }
+
+    private void deleteIncome(IncomeForm.DeleteEvent evt) {
+        incomeService.delete(evt.getIncome());
+        refreshAllIncomeViews();
+        closeIncomeEditor();
+    }
+
+    private void refreshAllIncomeViews() {
+        fetchAllUserIncomes();
+        updateListOfIncomes();
+        fillUpListOfIncomesPerType();
+        setUpIncomesDividedByCategoryInVL();
+        updateIncomeChartData();
+    }
+
+    private HorizontalLayout getIncomeToolBar() {
+        filterIncomeName.setPlaceholder("Filtruj opis");
+        filterIncomeName.setClearButtonVisible(true);
+        filterIncomeName.setValueChangeMode(ValueChangeMode.LAZY);
+        filterIncomeName.addValueChangeListener(e -> updateListOfIncomes());
+
+        filterIncomeValue.setPlaceholder("Filtruj kwotę");
+        filterIncomeValue.setClearButtonVisible(true);
+        filterIncomeValue.setValueChangeMode(ValueChangeMode.LAZY);
+        filterIncomeValue.addValueChangeListener(e -> updateListOfIncomes());
+
+        filterIncomeType.setPlaceholder("Filtruj typ");
+        filterIncomeType.setClearButtonVisible(true);
+        filterIncomeType.addValueChangeListener(e -> updateListOfIncomes());
+
+        filterIncomeDate.setPlaceholder("Filtruj datę");
+        filterIncomeDate.setClearButtonVisible(true);
+        filterIncomeDate.addValueChangeListener(e -> updateListOfIncomes());
+
+        addIncomeButton.addClickListener(click -> {
+            if (incomeForm.isVisible()) {
+                closeIncomeEditor();
+                click.getSource().setText("Dodaj przychód");
+                click.getSource().setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
+            } else {
+                openIncomeEditor();
+                click.getSource().setText("Zamknij fromularz");
+                click.getSource().setIcon(new Icon(VaadinIcon.ARROW_LEFT));
+            }
+        });
+        addIncomeButton.setIconAfterText(true);
+        HorizontalLayout toolbar = new HorizontalLayout(filterIncomeName, filterIncomeValue, filterIncomeType, filterIncomeDate, addIncomeButton);
+        toolbar.addClassName("income-toolbar");
+        toolbar.setWidthFull();
+
+        return toolbar;
+    }
+
+    private void editIncome(Income income) {
+        if (income == null) {
+            closeIncomeEditor();
+        } else {
+            incomeForm.setIncome(income);
+            incomeForm.setVisible(true);
+        }
+    }
+
+    private void openIncomeEditor() {
+        incomeGrid.asSingleSelect().clear();
+        editIncome(new Income());
+    }
+
+    private void closeIncomeEditor() {
+        incomeForm.setIncome(null);
+        incomeForm.setVisible(false);
+
+        addIncomeButton.setText("Dodaj przychód");
+        addIncomeButton.setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
+    }
+
+    private void setUpIncomePieChart() {
+        HorizontalLayout wrapperOnVlAndChart = new HorizontalLayout();
+        wrapperOnVlAndChart.setWidth("75%");
+        wrapperOnVlAndChart.setHeight("50%");
+
+        VerticalLayout vlIncomesWithValue = new VerticalLayout(
+                incomeTotal,
+                incomeSalary,
+                incomeBonus,
+                incomeGift,
+                incomeReturn
+        );
+        fillUpListOfIncomesPerType();
+        setUpIncomesDividedByCategoryInVL();
+
+        HorizontalLayout chartLayout = new HorizontalLayout();
+        chartLayout.setAlignItems(FlexComponent.Alignment.START);
+
+        updateIncomeChartData();
+        chartLayout.add(chartIncomes);
+        wrapperOnVlAndChart.add(vlIncomesWithValue,chartLayout);
+        mainLayoutIncomes.add(wrapperOnVlAndChart);
+    }
+
+    private void fillUpListOfIncomesPerType() {
+        totalIncomes = 0.0;
+        listIncomes.clear();
+
+        for (IncomeType element: IncomeType.values()) {
+            List<Income> filteredList = allIncomes.stream().filter(inc -> inc.getIncomeType() == element).collect(Collectors.toList());
+            var incomePerType = filteredList.stream().mapToDouble(Income::getValue).sum();
+            totalIncomes += incomePerType;
+            listIncomes.add(incomePerType);
+        }
+    }
+
+    private void setUpIncomesDividedByCategoryInVL() {
+        incomeTotal.setText("Wszystkie przychody: " + roundOff(totalIncomes));
+        incomeSalary.setText("Pensja " + listIncomes.get(0));
+        incomeBonus.setText("Premia " + listIncomes.get(1));
+        incomeGift.setText("Prezent " + listIncomes.get(2));
+        incomeReturn.setText("Zwrot " + listIncomes.get(3));
+    }
+
+    private void updateIncomeChartData() {
+        DataSeries series = new DataSeries();
+        for (int i = 0; i < IncomeType.values().length; i++) {
+            if (listIncomes.get(i) != 0.0) {
+                series.add(new DataSeriesItem(incomeTypes.get(i), listIncomes.get(i)));
+            }
+        }
+
+        Configuration config = chartIncomes.getConfiguration();
+        config.setTitle("Rozkład przychodow względem typu:");
+        config.setTitle("Rozkład przychodow względem typu:");
+        config.setSeries(series);
+        chartIncomes.drawChart();
+    }
+
+    private void updateListOfIncomes() {
+        List<Income> filteredList = new ArrayList<>(allIncomes);
+        if (filterIncomeValue.getValue() != null && filterIncomeValue.getValue() != 0.0)
+            filteredList.retainAll(allIncomes.stream().filter(in -> in.getValue() == filterIncomeValue.getValue()).collect(Collectors.toList()));
+        if(filterIncomeName.getValue() != null && !filterIncomeName.getValue().isEmpty())
+            filteredList.retainAll(allIncomes.stream().filter(in -> in.getName().equalsIgnoreCase(filterIncomeName.getValue())).collect(Collectors.toList()));
+        if (filterIncomeDate.getValue() != null && !filterIncomeDate.getValue().toString().isEmpty())
+            filteredList.retainAll(allIncomes.stream().filter(in -> in.getDate().equals(filterIncomeDate.getValue())).collect(Collectors.toList()));
+        if (filterIncomeType.getValue() != null && !filterIncomeType.getValue().toString().isEmpty())
+            filteredList.retainAll(allIncomes.stream().filter(in -> in.getIncomeType() == filterIncomeType.getValue()).collect(Collectors.toList()));
+
+        incomeGrid.setItems(filteredList);
+    }
+
 
     private void fetchFreshUser() {
         try {
