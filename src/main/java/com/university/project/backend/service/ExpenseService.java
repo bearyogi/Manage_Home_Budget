@@ -55,19 +55,19 @@ public class ExpenseService implements Dao<Expense> {
         return expenseRepository.findAllByBudgetAndValue(budget, value);
     }
 
-    public List<Expense> findAllName(Budget budget, String name) {
+    public List<Expense> getAllByName(Budget budget, String name) {
         if(name == null || name.isEmpty()){
             return expenseRepository.findAllByBudget(budget);
         }
         return expenseRepository.findAllByBudgetAndName(budget, name);
     }
-    public List<Expense> findAllDate(Budget budget, LocalDate date) {
+    public List<Expense> getAllByDate(Budget budget, LocalDate date) {
         if(date == null || date.toString().isEmpty()){
             return expenseRepository.findAllByBudget(budget);
         }
         return expenseRepository.findAllByBudgetAndDate(budget, date); }
 
-    public List<Expense> findAllExpenseType(Budget budget, Object expenseType) {
+    public List<Expense> getAllByExpenseType(Budget budget, Object expenseType) {
 
         if(expenseType == null || expenseType.toString().isEmpty()){
             return expenseRepository.findAllByBudget(budget);

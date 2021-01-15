@@ -7,6 +7,7 @@ import com.university.project.backend.service.ExpenseService;
 import com.university.project.backend.service.IncomeService;
 import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
@@ -16,6 +17,9 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 
 import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -29,6 +33,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.university.project.utils.TransformUtils.*;
 
 @Route(value = "personal", layout = MainView.class)
 @PageTitle("PersonalBudget")
@@ -37,24 +44,35 @@ public class PersonalBudgetView extends Div {
 
     private User user;
 
-    private ExpenseForm expenseForm;
+    private final ExpenseForm expenseForm = new ExpenseForm();
     private IncomeForm incomeForm;
 
-    private ExpenseService expenseService;
-    private IncomeService incomeService;
+    private final ExpenseService expenseService;
+    private final IncomeService incomeService;
 
-    private Grid<Expense> expenseGrid = new Grid<>(Expense.class);
-    private Grid<Income> incomeGrid = new Grid<>(Income.class);
+    private final Grid<Expense> expenseGrid = new Grid<>(Expense.class);
+    private final Grid<Income> incomeGrid = new Grid<>(Income.class);
 
     private NumberField filterTextValue = new NumberField();
     private TextField filterTextName = new TextField();
     private ComboBox filterTextType = new ComboBox();
     private DatePicker filterTextDate = new DatePicker();
 
-    private Tabs tabs;
-    private List<Integer> listExpenses = new ArrayList<>();
-    private List<Integer> listIncomes = new ArrayList<>();
-    private int totalExpenses;
+    private final Tab tabExpenses = new Tab("Wydatki");
+    private final Tab tabIncomes = new Tab("Przychody");
+    private final Tab tabTotal = new Tab("Całość");
+    private final Tabs tabs = new Tabs(tabExpenses, tabIncomes, tabTotal);
+    private final Button addExpenseButton = new Button("Dodaj wydatek", new Icon(VaadinIcon.ARROW_RIGHT));
+
+    private List<Double> listExpenses = new ArrayList<>();
+    private List<Double> listIncomes = new ArrayList<>();
+    private double totalExpenses = 0.0;
+    private double totalIncomes = 0.0;
+
+    private List<Expense> allExpenses = new ArrayList<>();
+    private final List<String> expenseTypes = Arrays.asList("Transport", "Zdrowie", "Rodzina", "Zakupy", "Prezenty", "Edukacja", "Dom", "Hobby");
+    private final Chart chartExpenses = new Chart(ChartType.PIE);
+
 
     private final H4 expenseTotal = new H4();
     private final H4 expenseTransport = new H4();
@@ -74,57 +92,53 @@ public class PersonalBudgetView extends Div {
         this.expenseService = expenseService;
         this.incomeService = incomeService;
         fetchFreshUser();
+        fetchAllUserExpenses();
 
         setUpTabLayout();
-        fillListExpenses();
-        setUpTabPieChart();
+        fillUpListOfExpensesPerType();
+        setUpExpensePieChart();
         configureGrid();
+
         filterTextType.setItems(ExpenseType.values());
-        expenseForm = new ExpenseForm();
         expenseForm.addListener(ExpenseForm.SaveEvent.class, this::saveExpense);
         expenseForm.addListener(ExpenseForm.DeleteEvent.class, this::deleteExpense);
         expenseForm.addListener(ExpenseForm.CloseEvent.class, e -> closeEditor());
         expenseGrid.setHeightByRows(true);
+
         HorizontalLayout content = new HorizontalLayout(expenseGrid, expenseForm);
         content.addClassName("content");
         content.setSizeFull();
         content.setWidthFull();
         add(getToolBar(), content);
-        updateList();
         closeEditor();
     }
 
-    private void setUpTabLayout() {
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setWidthFull();
-        Tab tab1 = new Tab("Wydatki");
-        Tab tab2 = new Tab("Całość");
-        Tab tab3 = new Tab("Przychody");
-        tabs = new Tabs(tab1, tab2, tab3);
-        tabs.setWidthFull();
-        tabs.setFlexGrowForEnclosedTabs(1);
-        layout.add(tabs);
-        add(layout);
+    private void fetchAllUserExpenses() {
+        allExpenses = expenseService.getAllByBudget(user.getPrivateBudget());
     }
 
-    private void setUpTabPieChart() {
+    private void setUpTabLayout() {
+        tabs.setWidthFull();
+        tabs.setFlexGrowForEnclosedTabs(1);
+        add(tabs);
+    }
 
-        HorizontalLayout chartLayout = new HorizontalLayout();
-        HorizontalLayout vLayout = new HorizontalLayout();
-        vLayout.setWidth("75%");
-        vLayout.setHeight("50%");
-        Chart chart = new Chart(ChartType.PIE);
-        Configuration config = chart.getConfiguration();
-        config.setTitle("Rozkład wydatków na typ:");
-        config.setSubTitle("Twoje personalne/dla grupy xyz");
-        DataSeries series = new DataSeries("Rozkład");
-        List<String> expenseName = Arrays.asList("Transport", "Zdrowie", "Rodzina", "Zakupy", "Prezenty", "Edukacja", "Dom", "Hobby");
+    private void fillUpListOfExpensesPerType() {
+        totalExpenses = 0.0;
+        listExpenses.clear();
 
-        for (int i = 0; i < 8; i++) {
-            if (listExpenses.get(i) != 0)
-                series.add(new DataSeriesItem(expenseName.get(i), listExpenses.get(i)));
+        for (ExpenseType element : ExpenseType.values()) {
+            List<Expense> filteredList = allExpenses.stream().filter(expense -> expense.getExpenseType() == element).collect(Collectors.toList());
+            var expensePerType = filteredList.stream().mapToDouble(Expense::getValue).sum();
+            totalExpenses += expensePerType;
+            listExpenses.add(expensePerType);
         }
-        config.addSeries(series);
+    }
+
+    private void setUpExpensePieChart() {
+        HorizontalLayout wrapperOnVLAndChart = new HorizontalLayout();
+        wrapperOnVLAndChart.setWidth("75%");
+        wrapperOnVLAndChart.setHeight("50%");
 
         VerticalLayout vlExpensesWithValue = new VerticalLayout(
                 expenseTotal,
@@ -137,16 +151,21 @@ public class PersonalBudgetView extends Div {
                 expenseHome,
                 expenseHobby
         );
-        setUpExpensesOrderByCategory();
+        setUpExpensesOrderByCategoryInVL();
 
+        HorizontalLayout chartLayout = new HorizontalLayout();
         chartLayout.setAlignItems(FlexComponent.Alignment.START);
-        chartLayout.add(chart);
-        vLayout.add(vlExpensesWithValue, chartLayout);
-        add(vLayout);
+
+        updateExpenseChartData();
+
+        chartLayout.add(chartExpenses);
+        wrapperOnVLAndChart.add(vlExpensesWithValue, chartLayout);
+        add(wrapperOnVLAndChart);
     }
 
-    private void setUpExpensesOrderByCategory() {
-        expenseTotal.setText("Wszystkie wydatki: " + this.totalExpenses);
+    private void setUpExpensesOrderByCategoryInVL() {
+
+        expenseTotal.setText("Wszystkie wydatki: " + roundOff(totalExpenses));
         expenseTransport.setText("Transport " + listExpenses.get(0));
         expenseHealth.setText("Zdrowie " + listExpenses.get(1));
         expenseFamily.setText("Rodzina " + listExpenses.get(2));
@@ -157,36 +176,62 @@ public class PersonalBudgetView extends Div {
         expenseHobby.setText("Hobby " + listExpenses.get(7));
     }
 
-    private void fillListIncomes() {
+    private void updateExpenseChartData() {
+/*
+        Configuration config = chartExpenses.getConfiguration();
 
-    }
+        config.setTitle("Rozkład wydatków względem typu:");
+        config.setSubTitle("Twoje wydatki");
+*/
 
-    private void fillListExpenses() {
-        totalExpenses = 0;
-        for (ExpenseType element : ExpenseType.values()) {
-
-            int money = 0;
-            List<Expense> list = new ArrayList<>(expenseService.findAllExpenseType(user.getPrivateBudget(), element));
-            for (Expense expense : list) {
-                money += expense.getValue();
+        DataSeries series = new DataSeries();
+        for (int i = 0; i < 8; i++) {
+            if (listExpenses.get(i) != 0) {
+                series.add(new DataSeriesItem(expenseTypes.get(i), listExpenses.get(i)));
             }
-            totalExpenses += money;
-            listExpenses.add(money);
         }
+
+        Configuration config = chartExpenses.getConfiguration();
+        config.setTitle("Rozkład wydatków względem typu:");
+        config.setSeries(series);
+        chartExpenses.drawChart();
     }
 
-    private void deleteExpense(ExpenseForm.DeleteEvent evt) {
-        expenseService.delete(evt.getExpense());
-        updateList();
-        closeEditor();
+    private void fillListIncomes() {
+        //TODO list of incomes
+    }
+
+    private void configureGrid() {
+        expenseGrid.addClassName("expense-grid");
+        expenseGrid.setSizeFull();
+        expenseGrid.setColumns("value", "name", "expenseType", "date");
+
+        expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+        expenseGrid.asSingleSelect().addValueChangeListener(evt -> editExpense(evt.getValue()));
+        expenseGrid.setItems(allExpenses);
     }
 
     private void saveExpense(ExpenseForm.SaveEvent evt) {
         Expense expenseToSave = evt.getExpense();
         expenseToSave.setBudget(user.getPrivateBudget());
         expenseService.save(expenseToSave);
-        updateList();
+
+        refreshAllExpensesViews();
         closeEditor();
+    }
+
+    private void deleteExpense(ExpenseForm.DeleteEvent evt) {
+        expenseService.delete(evt.getExpense());
+        refreshAllExpensesViews();
+        closeEditor();
+    }
+
+    private void refreshAllExpensesViews() {
+        fetchAllUserExpenses();
+        updateList();
+        fillUpListOfExpensesPerType();
+        setUpExpensesOrderByCategoryInVL();
+        updateExpenseChartData();
     }
 
     private HorizontalLayout getToolBar() {
@@ -208,27 +253,28 @@ public class PersonalBudgetView extends Div {
         filterTextDate.setClearButtonVisible(true);
         filterTextDate.addValueChangeListener(e -> updateList());
 
-        Button addExpenseButton = new Button("Dodaj wydatek", click -> addExpense());
-        Button closeFormButton = new Button("Zamknij formularz", click -> closeEditor());
-        HorizontalLayout toolbar = new HorizontalLayout(filterTextValue, filterTextName, filterTextType, filterTextDate, addExpenseButton, closeFormButton);
+        addExpenseButton.addClickListener(click -> {
+            if (expenseForm.isVisible()) {
+                closeEditor();
+                click.getSource().setText("Dodaj wydatek");
+                click.getSource().setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
+            } else {
+                openEditor();
+                click.getSource().setText("Zamknij fromularz");
+                click.getSource().setIcon(new Icon(VaadinIcon.ARROW_LEFT));
+            }
+        });
+        addExpenseButton.setIconAfterText(true);
+
+        HorizontalLayout toolbar = new HorizontalLayout(filterTextValue, filterTextName, filterTextType, filterTextDate, addExpenseButton);
         toolbar.addClassName("toolbar");
         toolbar.setWidthFull();
         return toolbar;
     }
 
-    private void addExpense() {
+    private void openEditor() {
         expenseGrid.asSingleSelect().clear();
         editExpense(new Expense());
-    }
-
-    private void configureGrid() {
-        expenseGrid.addClassName("expense-grid");
-        expenseGrid.setSizeFull();
-        expenseGrid.setColumns("value", "name", "expenseType", "date");
-
-        expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
-
-        expenseGrid.asSingleSelect().addValueChangeListener(evt -> editExpense(evt.getValue()));
     }
 
     private void editExpense(Expense expense) {
@@ -245,16 +291,23 @@ public class PersonalBudgetView extends Div {
         expenseForm.setExpense(null);
         expenseForm.setVisible(false);
         removeClassName("editing");
+
+        addExpenseButton.setText("Dodaj wydatek");
+        addExpenseButton.setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
     }
 
     private void updateList() {
-        Budget personalBudget = user.getPrivateBudget();
-        List<Expense> list = new ArrayList<>(expenseService.getAllByBudget(personalBudget));
-        list.retainAll(expenseService.getAllByValue(personalBudget, filterTextValue.getValue()));
-        list.retainAll(expenseService.findAllName(personalBudget, filterTextName.getValue()));
-        list.retainAll(expenseService.findAllDate(personalBudget, filterTextDate.getValue()));
-        list.retainAll(expenseService.findAllExpenseType(personalBudget, filterTextType.getValue()));
-        expenseGrid.setItems(list);
+        List<Expense> filteredList = new ArrayList<>(allExpenses);
+        if (filterTextValue.getValue() != null && filterTextValue.getValue() != 0.0)
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getValue() == filterTextValue.getValue()).collect(Collectors.toUnmodifiableList()));
+        if (filterTextName.getValue() != null && !filterTextName.getValue().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getName().equalsIgnoreCase(filterTextName.getValue())).collect(Collectors.toUnmodifiableList()));
+        if (filterTextDate.getValue() != null && !filterTextDate.getValue().toString().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getDate().equals(filterTextDate.getValue())).collect(Collectors.toUnmodifiableList()));
+        if (filterTextType.getValue() != null && !filterTextType.getValue().toString().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getExpenseType() == filterTextType.getValue()).collect(Collectors.toUnmodifiableList()));
+        //System.out.println("Filtered list size = " + filteredList.size());
+        expenseGrid.setItems(filteredList);
     }
 
     private void fetchFreshUser() {
