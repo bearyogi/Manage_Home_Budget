@@ -27,9 +27,9 @@ import java.util.List;
 @PageTitle("Families")
 public class FamiliesView extends VerticalLayout {
     private final FamilyService familyService;
+    private final User activeUser = VaadinSession.getCurrent().getAttribute(User.class);
 
     private final Grid<Family> gridFamilies = new Grid<>(Family.class);
-    private final User activeUser = VaadinSession.getCurrent().getAttribute(User.class);
 
     public FamiliesView(FamilyService familyService) {
         this.familyService = familyService;

@@ -1,6 +1,7 @@
 package com.university.project.backend.service;
 
 import com.university.project.backend.entity.Family;
+import com.university.project.backend.entity.User;
 import com.university.project.backend.repository.FamilyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,4 +42,7 @@ public class FamilyService implements Dao<Family> {
         return familyRepository.findAll();
     }
 
+    public List<Family> getAllByUser(User activeUser) {
+        return familyRepository.findAllByUsers(activeUser);
+    }
 }

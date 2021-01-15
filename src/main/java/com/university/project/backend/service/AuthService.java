@@ -2,10 +2,7 @@ package com.university.project.backend.service;
 
 import com.university.project.backend.entity.User;
 import com.university.project.backend.repository.UserRepository;
-import com.university.project.ui.views.FamiliesView;
-import com.university.project.ui.views.HomeView;
-import com.university.project.ui.views.MainView;
-import com.university.project.ui.views.PersonalBudgetView;
+import com.university.project.ui.views.*;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.tabs.Tab;
@@ -49,6 +46,7 @@ public class AuthService {
         routes.add(new AuthorizedRoute("home", "Home", HomeView.class));
         routes.add(new AuthorizedRoute("personal", "PersonalBudget", PersonalBudgetView.class));
         routes.add(new AuthorizedRoute("families", "Families", FamiliesView.class));
+        routes.add(new AuthorizedRoute("myfamilies", "MyFamilies", MyFamiliesView.class));
 
         return routes;
     }
