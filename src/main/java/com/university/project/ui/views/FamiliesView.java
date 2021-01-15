@@ -33,6 +33,7 @@ public class FamiliesView extends VerticalLayout {
 
     public FamiliesView(FamilyService familyService) {
         this.familyService = familyService;
+        setSizeFull();
 
         addButtons();
         configureGrid();
@@ -43,15 +44,13 @@ public class FamiliesView extends VerticalLayout {
         Button buttonAddFamily = new Button("Dodaj grupę", new Icon(VaadinIcon.PLUS_CIRCLE));
         buttonAddFamily.setIconAfterText(true);
         buttonAddFamily.addClickListener(click -> {
-            //TODO do poprawek nie dziala dodawanie blad
             showAddFamilyDialog();
         });
 
         Button buttonJoinToFamily = new Button("Dołącz do grupy", new Icon(VaadinIcon.GROUP));
         buttonJoinToFamily.setIconAfterText(true);
         buttonJoinToFamily.addClickListener(click -> {
-                //TODO check czy user nalezy do grupy
-                //a takze czy zaznaczona jest jakikolwiek grupa w gridzie
+            tryAddUserToFamily();
         });
         add(new HorizontalLayout(buttonAddFamily, buttonJoinToFamily));
     }
@@ -70,7 +69,7 @@ public class FamiliesView extends VerticalLayout {
         );
 
         Button confirmButton = new Button("Potwierdź", event -> {
-            if (textFamilyName.getValue().isEmpty()){
+            if (textFamilyName.getValue().isEmpty()) {
                 textFamilyName.setErrorMessage("Wpisz nazwę!");
             } else {
                 Family familyToSave = new Family();
@@ -79,6 +78,7 @@ public class FamiliesView extends VerticalLayout {
                 familyToSave.addUser(activeUser);
 
                 familyService.save(familyToSave);
+                fetchAllGroups();
                 dialog.close();
             }
         });
@@ -95,10 +95,32 @@ public class FamiliesView extends VerticalLayout {
         dialog.open();
     }
 
+    private void tryAddUserToFamily() {
+        var selectedFamily = gridFamilies.getSelectionModel().getFirstSelectedItem();
+        if (selectedFamily.isPresent()) {
+            if (selectedFamily.get().isUserInFamily(activeUser)) {
+                Notification.show("Już jesteś w tej grupie!", 5000, Notification.Position.MIDDLE);
+            } else {
+                Family familyToUpdate = selectedFamily.get();
+                familyToUpdate.addUser(activeUser);
+                familyService.update(familyToUpdate);
+                fetchAllGroups();
+
+                Notification.show("Pomyślnie dodano do grupy!", 5000, Notification.Position.MIDDLE);
+            }
+        } else {
+            Notification.show("Musisz zaznaczyć grupę do której chcesz dołączyć!", 5000, Notification.Position.MIDDLE);
+        }
+    }
+
     private void configureGrid() {
         gridFamilies.addClassName("families-grid");
         gridFamilies.setSizeFull();
+        gridFamilies.setColumns("familyId", "familyName", "users");
         gridFamilies.getColumns().forEach(col -> col.setAutoWidth(true));
+        gridFamilies.setSelectionMode(Grid.SelectionMode.SINGLE);
+
+        add(gridFamilies);
     }
 
     private void fetchAllGroups() {

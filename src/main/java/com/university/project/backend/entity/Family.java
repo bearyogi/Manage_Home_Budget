@@ -24,12 +24,7 @@ public class Family {
     @OneToOne(cascade = CascadeType.ALL)
     private Budget budget;
 
-    @ManyToMany(cascade = {
-            CascadeType.MERGE,
-            CascadeType.DETACH,
-            CascadeType.PERSIST,
-            CascadeType.REFRESH
-    })
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_family",
             joinColumns = @JoinColumn(name = "family_id"),
             inverseJoinColumns = @JoinColumn(name = "id"))
@@ -62,5 +57,9 @@ public class Family {
 
     public void removeUser(User user) {
         this.users.remove(user);
+    }
+
+    public boolean isUserInFamily(User user) {
+        return users.contains(user);
     }
 }

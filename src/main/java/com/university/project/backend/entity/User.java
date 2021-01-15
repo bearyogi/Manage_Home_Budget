@@ -38,4 +38,10 @@ public class User extends Person {
     public boolean checkPassword(String plainPassword) {
         return DigestUtils.sha1Hex(plainPassword + passwordSalt).equals(passwordHash);
     }
+
+    @Override
+    public String toString() {
+        return getFirstName() +
+                " " + getLastName();
+    }
 }
