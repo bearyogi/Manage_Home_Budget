@@ -1,13 +1,15 @@
 package com.university.project.ui.views;
 
+import com.university.project.backend.entity.Family;
 import com.university.project.backend.service.AuthService;
-import com.university.project.backend.service.UserService;
+import com.university.project.backend.service.FamilyService;
 import com.vaadin.componentfactory.ToggleButton;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -41,8 +43,7 @@ public class MainView extends AppLayout {
     private final Tabs menu;
     private H1 viewTitle;
     private final AuthService authService;
-
-
+    private final FamilyService familyService;
     private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
         if (themeList.contains(Lumo.DARK))
@@ -51,9 +52,9 @@ public class MainView extends AppLayout {
             themeList.add(Lumo.DARK);
     });
 
-    public MainView(AuthService authService) {
+    public MainView(AuthService authService, FamilyService familyService) {
+        this.familyService = familyService;
         this.authService = authService;
-
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
@@ -111,14 +112,22 @@ public class MainView extends AppLayout {
     }
 
     private Tabs createMenu() {
+        ComboBox<Family> cb = new ComboBox("Wybierz grupę");
+        cb.setItems(familyService.getAllByUser(AuthService.getUser()));
+        cb.setItemLabelGenerator(family -> family.getFamilyName());
+        cb.addValueChangeListener(e -> viewFamilyBudget(e.getValue().getFamilyId()));
         final Tabs tabs = new Tabs();
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
         tabs.setId("tabs");
         tabs.add(createMenuItems());
+        tabs.add(cb);
         return tabs;
     }
 
+    private void viewFamilyBudget(int selectedFamily) {
+        UI.getCurrent().navigate(FamilyBudgetView.class, selectedFamily);
+   }
 
     private Component[] createMenuItems() {
         return authService.getAuthorizedRoutes().stream()
@@ -137,7 +146,6 @@ public class MainView extends AppLayout {
     @Override
     protected void afterNavigation() {
         super.afterNavigation();
-        getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
         viewTitle.setText(getCurrentPageTitle());
     }
 

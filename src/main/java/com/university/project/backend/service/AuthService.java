@@ -18,13 +18,13 @@ import java.util.List;
 public class AuthService {
     @Autowired
     private final UserRepository userRepository;
-
+    private static User user;
     public AuthService(@Autowired UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public void authenticate(String username, String password) throws AuthException {
-        User user = userRepository.getByUsername(username);
+         user = userRepository.getByUsername(username);
         if (user != null && user.checkPassword(password)) {
             VaadinSession.getCurrent().setAttribute(Constants.USER_ID, user.getId());
             VaadinSession.getCurrent().setAttribute(User.class, user);
@@ -33,7 +33,9 @@ public class AuthService {
             throw new AuthException();
         }
     }
-
+    public static User getUser(){
+        return user;
+    }
     private void createRoutes() {
         getAuthorizedRoutes()
                 .forEach(route ->
@@ -46,7 +48,6 @@ public class AuthService {
         routes.add(new AuthorizedRoute("home", "Home", HomeView.class));
         routes.add(new AuthorizedRoute("personal", "PersonalBudget", PersonalBudgetView.class));
         routes.add(new AuthorizedRoute("families", "Families", FamiliesView.class));
-        routes.add(new AuthorizedRoute("myfamilies", "MyFamilies", MyFamiliesView.class));
 
         return routes;
     }
