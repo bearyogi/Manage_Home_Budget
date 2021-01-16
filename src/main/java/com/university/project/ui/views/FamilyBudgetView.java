@@ -58,6 +58,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     }
 
     private void setViewContent() {
+        removeAll();
         addReturnButton();
         addTabsWithPages();
         addContent();
