@@ -108,6 +108,7 @@ public class PersonalBudgetView extends Div {
     public PersonalBudgetView(UserService userService, ExpenseService expenseService, IncomeService incomeService) {
         addClassName("personal-view");
 
+
         this.userService = userService;
         this.expenseService = expenseService;
         this.incomeService = incomeService;
@@ -116,6 +117,8 @@ public class PersonalBudgetView extends Div {
         fetchAllUserIncomes();
 
         setUpTabs();
+        this.tabs.setSelectedTab(tabIncomes);
+        this.tabs.setSelectedTab(tabExpenses);
         setUpExpenseLayout();
         setUpIncomeLayout();
         setUpTotalLayout();
@@ -148,9 +151,6 @@ public class PersonalBudgetView extends Div {
 
         add(tabs, pages);
 
-        //TODO przy pierwszym uruchomieniu zakladki zeby wybieralo od razu ExpenseTab
-        //nie dziala to ponizsze
-        //tabs.setSelectedIndex(0);
     }
 
     private void setUpExpenseLayout() {
