@@ -1,0 +1,34 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="ProjectSuite" time-out="10000" verbose="1">
+    <test name="ProjectTests">
+        <groups>
+            <define name="entity">
+
+            </define>
+
+            <define name="form">
+
+            </define>
+
+            <define name="repository">
+
+            </define>
+
+            <define name="service">
+
+            </define>
+
+            <define name="ui">
+
+            </define>
+            <run>
+
+            </run>
+        </groups>
+
+        <classes>
+
+        </classes>
+    </test>
+</suite>
