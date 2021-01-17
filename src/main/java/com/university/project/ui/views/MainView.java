@@ -40,10 +40,11 @@ import java.util.Optional;
 @PWA(name = "PersonalBudget", shortName = "Budget", enableInstallPrompt = false)
 public class MainView extends AppLayout {
 
+    static ComboBox<Family> cb = new ComboBox("Wybierz grupę");
     private final Tabs menu;
     private H1 viewTitle;
     private final AuthService authService;
-    private final FamilyService familyService;
+    private static FamilyService familyService;
     private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
         if (themeList.contains(Lumo.DARK))
@@ -112,7 +113,6 @@ public class MainView extends AppLayout {
     }
 
     private Tabs createMenu() {
-        ComboBox<Family> cb = new ComboBox("Wybierz grupę");
         cb.setItems(familyService.getAllByUser(AuthService.getUser()));
         cb.setItemLabelGenerator(family -> family.getFamilyName());
         cb.addValueChangeListener(e -> viewFamilyBudget(e.getValue().getFamilyId()));
@@ -124,7 +124,10 @@ public class MainView extends AppLayout {
         tabs.add(cb);
         return tabs;
     }
+    public static void updateCB(){
+        cb.setItems(familyService.getAllByUser(AuthService.getUser()));
 
+    }
     private void viewFamilyBudget(int selectedFamily) {
         UI.getCurrent().navigate(FamilyBudgetView.class, selectedFamily);
    }
@@ -149,10 +152,6 @@ public class MainView extends AppLayout {
         viewTitle.setText(getCurrentPageTitle());
     }
 
-    private Optional<Tab> getTabForComponent(Component component) {
-        return menu.getChildren().filter(tab -> ComponentUtil.getData(tab, Class.class).equals(component.getClass()))
-                .findFirst().map(Tab.class::cast);
-    }
 
     private String getCurrentPageTitle() {
         return getContent().getClass().getAnnotation(PageTitle.class).value();
