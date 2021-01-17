@@ -115,7 +115,15 @@ public class MainView extends AppLayout {
     private Tabs createMenu() {
         cb.setItems(familyService.getAllByUser(AuthService.getUser()));
         cb.setItemLabelGenerator(family -> family.getFamilyName());
-        cb.addValueChangeListener(e -> viewFamilyBudget(e.getValue().getFamilyId()));
+        cb.addValueChangeListener(e -> {
+            try{
+                viewFamilyBudget(e.getValue().getFamilyId());
+            }catch(NullPointerException n){
+
+            }
+
+            cb.setClearButtonVisible(true);
+        });
         final Tabs tabs = new Tabs();
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
