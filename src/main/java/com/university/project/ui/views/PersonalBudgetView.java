@@ -104,6 +104,9 @@ public class PersonalBudgetView extends Div {
     private final H4 incomeGift = new H4();
     private final H4 incomeReturn = new H4();
 
+    private H2 balanceLabel = new H2();
+    private H4 incomesLabel = new H4();
+    private H4 expensesLabel = new H4();
 
     public PersonalBudgetView(UserService userService, ExpenseService expenseService, IncomeService incomeService) {
         addClassName("personal-view");
@@ -190,9 +193,9 @@ public class PersonalBudgetView extends Div {
 
     private void setUpTotalLayout() {
         var balance = roundOff(totalIncomes - totalExpenses);
-        H2 balanceLabel = new H2("Saldo " + (balance));
-        H4 incomesLabel = new H4("Przychody " + totalIncomes);
-        H4 expensesLabel = new H4("Wydatki " + totalExpenses);
+       balanceLabel = new H2("Saldo " + (balance));
+       incomesLabel = new H4("Przychody " + totalIncomes);
+       expensesLabel = new H4("Wydatki " + totalExpenses);
 
         mainLayoutTotal.add(
                 balanceLabel,
@@ -304,6 +307,7 @@ public class PersonalBudgetView extends Div {
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
         updateExpenseChartData();
+        updateBalance();
     }
 
     private HorizontalLayout getExpenseToolBar() {
@@ -353,7 +357,14 @@ public class PersonalBudgetView extends Div {
             addClassName("editing");
         }
     }
-
+    private void updateBalance(){
+        mainLayoutTotal.removeAll();
+        var balance = roundOff(totalIncomes - totalExpenses);
+        balanceLabel = new H2("Saldo " + (balance));
+        incomesLabel = new H4("Przychody " + totalIncomes);
+        expensesLabel = new H4("Wydatki " + totalExpenses);
+        mainLayoutTotal.add(balanceLabel,incomesLabel,expensesLabel);
+    }
     private void openExpenseEditor() {
         expenseGrid.asSingleSelect().clear();
         editExpense(new Expense());
@@ -414,6 +425,7 @@ public class PersonalBudgetView extends Div {
         fillUpListOfIncomesPerType();
         setUpIncomesDividedByCategoryInVL();
         updateIncomeChartData();
+        updateBalance();
     }
 
     private HorizontalLayout getIncomeToolBar() {

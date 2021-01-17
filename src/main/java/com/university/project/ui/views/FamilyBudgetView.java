@@ -9,7 +9,6 @@ import com.university.project.backend.service.IncomeService;
 import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
@@ -122,6 +121,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private final H4 incomeGift = new H4();
     private final H4 incomeReturn = new H4();
 
+    private H2 balanceLabel = new H2();
+    private H4 incomesLabel = new H4();
+    private H4 expensesLabel = new H4();
 
     public FamilyBudgetView() {
         removeAll();
@@ -189,9 +191,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
     private void setUpTotalLayout() {
         var balance = roundOff(totalIncomes - totalExpenses);
-        H2 balanceLabel = new H2("Saldo " + (balance));
-        H4 incomesLabel = new H4("Przychody " + totalIncomes);
-        H4 expensesLabel = new H4("Wydatki " + totalExpenses);
+         balanceLabel = new H2("Saldo " + (balance));
+         incomesLabel = new H4("Przychody " + totalIncomes);
+         expensesLabel = new H4("Wydatki " + totalExpenses);
 
         mainLayoutTotal.add(
                 balanceLabel,
@@ -199,6 +201,15 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
                 expensesLabel
         );
         mainLayoutTotal.setAlignItems(FlexComponent.Alignment.CENTER);
+    }
+
+    private void updateBalance(){
+        mainLayoutTotal.removeAll();
+        var balance = roundOff(totalIncomes - totalExpenses);
+        balanceLabel = new H2("Saldo " + (balance));
+        incomesLabel = new H4("Przychody " + totalIncomes);
+        expensesLabel = new H4("Wydatki " + totalExpenses);
+        mainLayoutTotal.add(balanceLabel,incomesLabel,expensesLabel);
     }
 
     private void setUpTabs() {
@@ -323,7 +334,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         Expense expenseToSave = evt.getExpense();
         expenseToSave.setBudget(selectedFamily.getBudget());
         expenseService.save(expenseToSave);
-
+        updateBalance();
         refreshAllExpensesViews();
         closeExpenseEditor();
     }
@@ -431,7 +442,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         Income incomeToSave = evt.getIncome();
         incomeToSave.setBudget(selectedFamily.getBudget());
         incomeService.save(incomeToSave);
-
+        updateBalance();
         refreshAllIncomeViews();
         closeIncomeEditor();
     }
