@@ -137,6 +137,7 @@ public class MainView extends AppLayout {
 
     }
     private void viewFamilyBudget(int selectedFamily) {
+        menu.setSelectedTab(null);
         UI.getCurrent().navigate(HomeView.class);
         UI.getCurrent().navigate(FamilyBudgetView.class, selectedFamily);
    }
