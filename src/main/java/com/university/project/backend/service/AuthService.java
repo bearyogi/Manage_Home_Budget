@@ -46,6 +46,7 @@ public class AuthService {
         List<AuthorizedRoute> routes = new ArrayList<>();
 
         routes.add(new AuthorizedRoute("home", "Home", HomeView.class));
+        routes.add(new AuthorizedRoute("credentials", "Credentials", CredentialsView.class));
         routes.add(new AuthorizedRoute("personal", "PersonalBudget", PersonalBudgetView.class));
         routes.add(new AuthorizedRoute("families", "Families", FamiliesView.class));
 
