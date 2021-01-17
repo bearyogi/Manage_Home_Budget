@@ -105,7 +105,7 @@ public class FamiliesView extends VerticalLayout {
                 familyToUpdate.addUser(activeUser);
                 familyService.update(familyToUpdate);
                 fetchAllGroups();
-
+                MainView.updateCB();
                 Notification.show("Pomyślnie dodano do grupy!", 5000, Notification.Position.MIDDLE);
             }
         } else {
