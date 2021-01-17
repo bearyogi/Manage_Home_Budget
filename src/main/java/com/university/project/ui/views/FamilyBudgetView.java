@@ -88,13 +88,13 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private final VerticalLayout mainLayoutExpenses = new VerticalLayout();
     private final VerticalLayout mainLayoutIncomes = new VerticalLayout();
     private final VerticalLayout mainLayoutTotal = new VerticalLayout();
-    private Div pages = new Div(mainLayoutExpenses, mainLayoutIncomes, mainLayoutTotal);
+    private final Div pages = new Div(mainLayoutExpenses, mainLayoutIncomes, mainLayoutTotal);
 
     private final Button addExpenseButton = new Button("Dodaj wydatek", new Icon(VaadinIcon.ARROW_RIGHT));
     private final Button addIncomeButton = new Button("Dodaj przychód", new Icon(VaadinIcon.ARROW_LEFT));
 
-    private List<Double> listExpenses = new ArrayList<>();
-    private List<Double> listIncomes = new ArrayList<>();
+    private final List<Double> listExpenses = new ArrayList<>();
+    private final List<Double> listIncomes = new ArrayList<>();
     private double totalExpenses = 0.0;
     private double totalIncomes = 0.0;
 
@@ -312,7 +312,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
+        if (!flag) series.add(new DataSeriesItem("Brak wydatków",1));
         Configuration config = chartExpenses.getConfiguration();
         config.setTitle("Rozkład wydatków względem typu:");
         config.setSeries(series);
@@ -563,7 +563,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów",1));
+        if (!flag) series.add(new DataSeriesItem("Brak Przychodów",1));
         Configuration config = chartIncomes.getConfiguration();
         config.setTitle("Rozkład przychodow względem typu:");
         config.setSeries(series);
