@@ -78,6 +78,8 @@ public class FamiliesView extends VerticalLayout {
                 familyToSave.addUser(activeUser);
 
                 familyService.save(familyToSave);
+
+                refreshComboBoxInMainView();
                 fetchAllGroups();
                 dialog.close();
             }
@@ -111,6 +113,10 @@ public class FamiliesView extends VerticalLayout {
         } else {
             Notification.show("Musisz zaznaczyć grupę do której chcesz dołączyć!", 5000, Notification.Position.MIDDLE);
         }
+    }
+
+    private void refreshComboBoxInMainView() {
+        MainView.updateCB();
     }
 
     private void configureGrid() {
