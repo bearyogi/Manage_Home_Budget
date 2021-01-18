@@ -3,8 +3,8 @@ package com.university.project.ui.views;
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -15,8 +15,10 @@ import java.util.Optional;
 
 @Route(value = "home", layout = MainView.class)
 @PageTitle("Home")
+@CssImport("./styles/views/home/home-view.css")
 public class HomeView extends Div {
     private final UserService userService;
+    private final H2 appName = new H2("Zarządzaj presonalnym lub grupowym budżetem już teraz!");
 
     private User user;
 
@@ -25,29 +27,29 @@ public class HomeView extends Div {
 
         fetchFreshUser();
 
-        setId("home-view");
+        setClassName("home-view");
 
         setUpLayoutWithUserCredentials();
         //createTabs();
     }
 
     private void setUpLayoutWithUserCredentials() {
-        Label labelFirstName = new Label("First Name: " + user.getFirstName());
-        Label labelLastName = new Label("Last Name: " + user.getLastName());
-        Label labelEmail = new Label("Email: " + user.getEmail());
-        Label labelPhone = new Label("Phone: " + user.getPhone());
-
         VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setClassName("layout-home");
+
+        Div divContainer = new Div();
+        Div overlay = new Div();
+
+        divContainer.addClassName("container-home");
+        appName.addClassName("style-appName");
+        overlay.addClassName("overlay-home");
+
+        divContainer.add(appName,overlay);
+
 
         verticalLayout.add(
-                labelFirstName,
-                labelLastName,
-                labelEmail,
-                labelPhone
+                divContainer
         );
-
-        verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-        verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
         add(verticalLayout);
     }
