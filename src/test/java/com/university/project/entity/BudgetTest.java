@@ -8,7 +8,6 @@ import org.testng.annotations.Test;
 import java.util.HashSet;
 import java.util.Set;
 import static org.testng.Assert.assertEquals;
-
 @Test(groups = "Entity")
 public class BudgetTest {
 private Budget emptyBudget = new Budget();

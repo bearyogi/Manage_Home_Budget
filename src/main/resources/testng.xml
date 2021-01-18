@@ -2,9 +2,14 @@
 
 <suite name="ProjectSuite" time-out="10000" verbose="1">
     <test name="ProjectTests">
+
         <groups>
             <define name="entity">
-
+                <include name="Budget"/>
+                <include name="Expense"/>
+                <include name="Income"/>
+                <include name="Family"/>
+                <include name="User"/>
             </define>
 
             <define name="form">
@@ -23,12 +28,18 @@
 
             </define>
             <run>
-
+                <include name="entity"/>
             </run>
         </groups>
-
+        <packages>
+            <package name="com.university.project.entity.*"/>
+        </packages>
         <classes>
-
+            <class name="com.university.project.entity.BudgetTest"/>
+            <class name="com.university.project.entity.ExpenseTest"/>
+            <class name="com.university.project.entity.FamilyTest"/>
+            <class name="com.university.project.entity.IncomeTest"/>
+            <class name="com.university.project.entity.UserTest"/>
         </classes>
     </test>
 </suite>
