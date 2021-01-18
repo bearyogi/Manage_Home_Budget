@@ -3,14 +3,9 @@ package com.university.project.entity;
 import com.university.project.backend.entity.Budget;
 import com.university.project.backend.entity.Expense;
 import com.university.project.backend.entity.ExpenseType;
-import com.university.project.backend.entity.Income;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
-
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.testng.Assert.assertEquals;
 
