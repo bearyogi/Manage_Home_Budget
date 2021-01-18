@@ -45,7 +45,7 @@ public class ExpenseTest {
         Expense testExpense = new Expense(1,"1",Double.valueOf(1),ExpenseType.EDUCATION,LocalDate.of(1999,06,03),budget);
 
         //Then
-        assertEquals(testExpense,fullExpense,"Should create full budget, but did not.");
+        assertEquals(testExpense,fullExpense,"Should create full expense, but did not.");
     }
 
     @BeforeTest

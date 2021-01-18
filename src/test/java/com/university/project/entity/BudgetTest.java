@@ -5,7 +5,6 @@ import com.university.project.backend.entity.Expense;
 import com.university.project.backend.entity.Income;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 import java.util.HashSet;
 import java.util.Set;
 import static org.testng.Assert.assertEquals;
@@ -18,7 +17,6 @@ private Budget fullBudget = new Budget();
         @Test
         public void shouldCreateEmptyBudget(){
             //Given
-            SoftAssert softAssert = new SoftAssert();
             Budget testBudget = new Budget();
 
             //When

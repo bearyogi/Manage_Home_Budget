@@ -32,7 +32,7 @@ public class IncomeTest {
         assertEquals(testIncome.getIncomeId(), emptyIncome.getIncomeId(),"Should have null id, but have not.");
         assertEquals(testIncome.getBudget(), emptyIncome.getBudget(),"Should have null budget, but have not.");
         assertEquals(testIncome.getDate(), emptyIncome.getDate(),"Should have null date, but have not.");
-        assertEquals(testIncome.getIncomeType(), emptyIncome.getIncomeType(),"Should have null expense type, but have not.");
+        assertEquals(testIncome.getIncomeType(), emptyIncome.getIncomeType(),"Should have null income type, but have not.");
         assertEquals(testIncome.getName(), emptyIncome.getName(),"Should have null name, but have not.");
         assertEquals(testIncome.getValue(), emptyIncome.getValue(),"Should have null value, but have not.");
     }
@@ -46,7 +46,7 @@ public class IncomeTest {
         Income testExpense = new Income(1,"1",Double.valueOf(1), IncomeType.BONUS,LocalDate.of(1999,06,03),budget);
 
         //Then
-        assertEquals(testExpense, fullIncome,"Should create full budget, but did not.");
+        assertEquals(testExpense, fullIncome,"Should create full income, but did not.");
     }
 
     @BeforeTest
