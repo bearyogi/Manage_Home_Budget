@@ -13,26 +13,22 @@
             </define>
 
             <define name="form">
-
+                <include name="ExpenseForm"/>
+                <include name="IncomeForm"/>
             </define>
 
-            <define name="repository">
-
-            </define>
-
-            <define name="service">
-
-            </define>
 
             <define name="ui">
 
             </define>
             <run>
                 <include name="entity"/>
+                <include name="form"/>
+                <include name="ui"/>
             </run>
         </groups>
         <packages>
-            <package name="com.university.project.entity.*"/>
+            <package name="com.university.project.*"/>
         </packages>
         <classes>
             <class name="com.university.project.entity.BudgetTest"/>
@@ -40,6 +36,8 @@
             <class name="com.university.project.entity.FamilyTest"/>
             <class name="com.university.project.entity.IncomeTest"/>
             <class name="com.university.project.entity.UserTest"/>
+            <class name="com.university.project.form.ExpenseFormTest"/>
+            <class name="com.university.project.form.IncomeFormTest"/>
         </classes>
     </test>
 </suite>
