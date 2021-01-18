@@ -17,6 +17,7 @@ import com.vaadin.flow.component.charts.model.DataSeries;
 import com.vaadin.flow.component.charts.model.DataSeriesItem;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
@@ -45,6 +46,7 @@ import static com.university.project.utils.TransformUtils.roundOff;
 
 @PageTitle("Family Budget")
 @Route(value = "family-budget", layout = MainView.class)
+@CssImport("./styles/views/personal-family/personal-family-view.css")
 public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<Integer> {
 
     @Autowired
@@ -104,6 +106,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
     private final Chart chartExpenses = new Chart(ChartType.PIE);
     private final Chart chartIncomes = new Chart(ChartType.PIE);
+
+    private final Chart chartExpensesTotal = new Chart(ChartType.PIE);
+    private final Chart chartIncomesTotal = new Chart(ChartType.PIE);
 
     private final H4 expenseTotal = new H4();
     private final H4 expenseTransport = new H4();
@@ -190,26 +195,47 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     }
 
     private void setUpTotalLayout() {
-        var balance = roundOff(totalIncomes - totalExpenses);
-         balanceLabel = new H2("Saldo " + (balance));
-         incomesLabel = new H4("Przychody " + totalIncomes);
-         expensesLabel = new H4("Wydatki " + totalExpenses);
+        updateIncomeTotalChartData();
+        updateExpenseTotalChartData();
 
-        mainLayoutTotal.add(
-                balanceLabel,
-                incomesLabel,
-                expensesLabel
-        );
-        mainLayoutTotal.setAlignItems(FlexComponent.Alignment.CENTER);
-    }
+        HorizontalLayout vlTotal = new HorizontalLayout();
 
-    private void updateBalance(){
-        mainLayoutTotal.removeAll();
+        VerticalLayout vlIncTotal = new VerticalLayout();
+        VerticalLayout vlExpTotal = new VerticalLayout();
+
+        vlTotal.setWidth("100%");
+        vlExpTotal.setWidth("50%");
+        vlIncTotal.setWidth("50%");
+
         var balance = roundOff(totalIncomes - totalExpenses);
         balanceLabel = new H2("Saldo " + (balance));
         incomesLabel = new H4("Przychody " + totalIncomes);
         expensesLabel = new H4("Wydatki " + totalExpenses);
-        mainLayoutTotal.add(balanceLabel,incomesLabel,expensesLabel);
+
+        incomesLabel.addClassName("text-total");
+        expensesLabel.addClassName("text-total");
+
+        vlExpTotal.add(incomesLabel,chartIncomesTotal);
+        vlIncTotal.add(expensesLabel,chartExpensesTotal);
+
+        balanceLabel.setClassName("numberCircle");
+
+        vlTotal.add(vlExpTotal,vlIncTotal);
+
+        Div circle = new Div();
+        circle.addClassName("circle");
+        balanceLabel.addClassName("text-circle");
+        circle.add(balanceLabel);
+
+        mainLayoutTotal.add(
+                circle,
+                vlTotal
+        );
+    }
+
+    private void updateBalance(){
+        mainLayoutTotal.removeAll();
+        setUpTotalLayout();
     }
 
     private void setUpTabs() {
@@ -293,6 +319,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         expenseTotal.addClassName("text-exp-inc-total");
         vlExpenses.addClassName("text-exp-inc");
         vlExpensesWithValue.add(expenseTotal,vlExpenses);
+        vlExpensesWithValue.addClassName("show-div");
 
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
@@ -352,7 +379,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         Expense expenseToSave = evt.getExpense();
         expenseToSave.setBudget(selectedFamily.getBudget());
         expenseService.save(expenseToSave);
-        updateBalance();
         refreshAllExpensesViews();
         closeExpenseEditor();
     }
@@ -369,6 +395,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
         updateExpenseChartData();
+        updateBalance();
     }
 
     private HorizontalLayout getExpenseToolBar() {
@@ -460,7 +487,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         Income incomeToSave = evt.getIncome();
         incomeToSave.setBudget(selectedFamily.getBudget());
         incomeService.save(incomeToSave);
-        updateBalance();
         refreshAllIncomeViews();
         closeIncomeEditor();
     }
@@ -477,6 +503,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         fillUpListOfIncomesPerType();
         setUpIncomesDividedByCategoryInVL();
         updateIncomeChartData();
+        updateBalance();
     }
 
     private HorizontalLayout getIncomeToolBar() {
@@ -568,6 +595,8 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         incomeTotal.addClassName("text-exp-inc-total");
         vlIncomes.addClassName("text-exp-inc");
         vlIncomesWithValue.add(incomeTotal,vlIncomes);
+        vlIncomesWithValue.addClassName("show-div");
+
         fillUpListOfIncomesPerType();
         setUpIncomesDividedByCategoryInVL();
 
@@ -628,5 +657,35 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
             filteredList.retainAll(allIncomes.stream().filter(in -> in.getIncomeType() == filterIncomeType.getValue()).collect(Collectors.toList()));
 
         incomeGrid.setItems(filteredList);
+    }
+
+    private void updateExpenseTotalChartData() {
+        DataSeries series = new DataSeries();
+        boolean flag = false;
+        for (int i = 0; i < 8; i++) {
+            if (listExpenses.get(i) != 0) {
+                series.add(new DataSeriesItem(expenseTypes.get(i), listExpenses.get(i)));
+                flag = true;
+            }
+        }
+        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
+        Configuration config = chartExpensesTotal.getConfiguration();
+        config.setSeries(series);
+        chartExpensesTotal.drawChart();
+    }
+
+    private void updateIncomeTotalChartData() {
+        DataSeries series = new DataSeries();
+        boolean flag = false;
+        for (int i = 0; i < IncomeType.values().length; i++) {
+            if (listIncomes.get(i) != 0.0) {
+                series.add(new DataSeriesItem(incomeTypes.get(i), listIncomes.get(i)));
+                flag = true;
+            }
+        }
+        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów",1));
+        Configuration config = chartIncomesTotal.getConfiguration();
+        config.setSeries(series);
+        chartIncomesTotal.drawChart();
     }
 }

@@ -19,6 +19,7 @@ import com.vaadin.flow.component.html.Div;
 
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -42,7 +43,7 @@ import static com.university.project.utils.TransformUtils.*;
 
 @Route(value = "personal", layout = MainView.class)
 @PageTitle("PersonalBudget")
-@CssImport("./styles/views/personal/personal-view.css")
+@CssImport("./styles/views/personal-family/personal-family-view.css")
 public class PersonalBudgetView extends Div {
     private final UserService userService;
     private User user;
@@ -91,6 +92,9 @@ public class PersonalBudgetView extends Div {
 
     private final Chart chartExpenses = new Chart(ChartType.PIE);
     private final Chart chartIncomes = new Chart(ChartType.PIE);
+
+    private final Chart chartExpensesTotal = new Chart(ChartType.PIE);
+    private final Chart chartIncomesTotal = new Chart(ChartType.PIE);
 
     private final H4 expenseTotal = new H4();
     private final H4 expenseTransport = new H4();
@@ -196,17 +200,42 @@ public class PersonalBudgetView extends Div {
     }
 
     private void setUpTotalLayout() {
+        updateIncomeTotalChartData();
+        updateExpenseTotalChartData();
+
+        HorizontalLayout vlTotal = new HorizontalLayout();
+
+        VerticalLayout vlIncTotal = new VerticalLayout();
+        VerticalLayout vlExpTotal = new VerticalLayout();
+
+        vlTotal.setWidth("100%");
+        vlExpTotal.setWidth("50%");
+        vlIncTotal.setWidth("50%");
+
         var balance = roundOff(totalIncomes - totalExpenses);
-       balanceLabel = new H2("Saldo " + (balance));
-       incomesLabel = new H4("Przychody " + totalIncomes);
-       expensesLabel = new H4("Wydatki " + totalExpenses);
+        balanceLabel = new H2("Saldo " + (balance));
+        incomesLabel = new H4("Przychody " + totalIncomes);
+        expensesLabel = new H4("Wydatki " + totalExpenses);
+
+        incomesLabel.addClassName("text-total");
+        expensesLabel.addClassName("text-total");
+
+        vlExpTotal.add(incomesLabel,chartIncomesTotal);
+        vlIncTotal.add(expensesLabel,chartExpensesTotal);
+
+        balanceLabel.setClassName("numberCircle");
+
+        vlTotal.add(vlExpTotal,vlIncTotal);
+
+        Div circle = new Div();
+        circle.addClassName("circle");
+        balanceLabel.addClassName("text-circle");
+        circle.add(balanceLabel);
 
         mainLayoutTotal.add(
-                balanceLabel,
-                incomesLabel,
-                expensesLabel
+                circle,
+                vlTotal
         );
-        mainLayoutTotal.setAlignItems(FlexComponent.Alignment.CENTER);
     }
 
 
@@ -253,6 +282,7 @@ public class PersonalBudgetView extends Div {
         expenseTotal.addClassName("text-exp-inc-total");
         vlExpenses.addClassName("text-exp-inc");
         vlExpensesWithValue.add(expenseTotal,vlExpenses);
+        vlExpensesWithValue.addClassName("show-div");
 
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
@@ -306,6 +336,21 @@ public class PersonalBudgetView extends Div {
         config.setTitle("Rozkład wydatków względem typu:");
         config.setSeries(series);
         chartExpenses.drawChart();
+    }
+
+    private void updateExpenseTotalChartData() {
+        DataSeries series = new DataSeries();
+        boolean flag = false;
+        for (int i = 0; i < 8; i++) {
+            if (listExpenses.get(i) != 0) {
+                series.add(new DataSeriesItem(expenseTypes.get(i), listExpenses.get(i)));
+                flag = true;
+            }
+        }
+        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
+        Configuration config = chartExpensesTotal.getConfiguration();
+        config.setSeries(series);
+        chartExpensesTotal.drawChart();
     }
 
     private void saveExpense(ExpenseForm.SaveEvent evt) {
@@ -381,11 +426,7 @@ public class PersonalBudgetView extends Div {
     }
     private void updateBalance(){
         mainLayoutTotal.removeAll();
-        var balance = roundOff(totalIncomes - totalExpenses);
-        balanceLabel = new H2("Saldo " + (balance));
-        incomesLabel = new H4("Przychody " + totalIncomes);
-        expensesLabel = new H4("Wydatki " + totalExpenses);
-        mainLayoutTotal.add(balanceLabel,incomesLabel,expensesLabel);
+        setUpTotalLayout();
     }
     private void openExpenseEditor() {
         expenseGrid.asSingleSelect().clear();
@@ -539,6 +580,7 @@ public class PersonalBudgetView extends Div {
         incomeTotal.addClassName("text-exp-inc-total");
         vlIncomes.addClassName("text-exp-inc");
         vlIncomesWithValue.add(incomeTotal,vlIncomes);
+        vlIncomesWithValue.addClassName("show-div");
 
 
         fillUpListOfIncomesPerType();
@@ -587,6 +629,21 @@ public class PersonalBudgetView extends Div {
         config.setTitle("Rozkład przychodow względem typu:");
         config.setSeries(series);
         chartIncomes.drawChart();
+    }
+
+    private void updateIncomeTotalChartData() {
+        DataSeries series = new DataSeries();
+        boolean flag = false;
+        for (int i = 0; i < IncomeType.values().length; i++) {
+            if (listIncomes.get(i) != 0.0) {
+                series.add(new DataSeriesItem(incomeTypes.get(i), listIncomes.get(i)));
+                flag = true;
+            }
+        }
+        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów",1));
+        Configuration config = chartIncomesTotal.getConfiguration();
+        config.setSeries(series);
+        chartIncomesTotal.drawChart();
     }
 
     private void updateListOfIncomes() {
