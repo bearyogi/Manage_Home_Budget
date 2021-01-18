@@ -265,17 +265,35 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         wrapperOnVLAndChart.setWidth("75%");
         wrapperOnVLAndChart.setHeight("50%");
 
-        VerticalLayout vlExpensesWithValue = new VerticalLayout(
-                expenseTotal,
+        VerticalLayout vlExpensesWithValue = new VerticalLayout();
+
+        HorizontalLayout vlExpenses = new HorizontalLayout();
+
+        VerticalLayout vlExpComponent1 = new VerticalLayout(
                 expenseTransport,
                 expenseHealth,
                 expenseFamily,
-                expenseGroceries,
+                expenseGroceries
+        );
+
+        VerticalLayout vlExpComponent2 = new VerticalLayout(
                 expenseGifts,
                 expenseEducation,
                 expenseHome,
                 expenseHobby
         );
+
+        vlExpenses.setWidth("100%");
+        vlExpComponent1.setWidth("50%");
+        vlExpComponent2.setWidth("50%");
+
+        vlExpenses.add(vlExpComponent1);
+        vlExpenses.add(vlExpComponent2);
+
+        expenseTotal.addClassName("text-exp-inc-total");
+        vlExpenses.addClassName("text-exp-inc");
+        vlExpensesWithValue.add(expenseTotal,vlExpenses);
+
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
 
@@ -526,13 +544,30 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         wrapperOnVlAndChart.setWidth("75%");
         wrapperOnVlAndChart.setHeight("50%");
 
-        VerticalLayout vlIncomesWithValue = new VerticalLayout(
-                incomeTotal,
+        VerticalLayout vlIncomesWithValue = new VerticalLayout();
+
+        HorizontalLayout vlIncomes = new HorizontalLayout();
+
+        VerticalLayout vlIncComponent1 = new VerticalLayout(
                 incomeSalary,
-                incomeBonus,
+                incomeBonus
+        );
+
+        VerticalLayout vlIncComponent2 = new VerticalLayout(
                 incomeGift,
                 incomeReturn
         );
+
+        vlIncomes.setWidth("100%");
+        vlIncComponent1.setWidth("50%");
+        vlIncComponent2.setWidth("50%");
+
+        vlIncomes.add(vlIncComponent1);
+        vlIncomes.add(vlIncComponent2);
+
+        incomeTotal.addClassName("text-exp-inc-total");
+        vlIncomes.addClassName("text-exp-inc");
+        vlIncomesWithValue.add(incomeTotal,vlIncomes);
         fillUpListOfIncomesPerType();
         setUpIncomesDividedByCategoryInVL();
 

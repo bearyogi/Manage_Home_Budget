@@ -13,6 +13,7 @@ import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.*;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 
@@ -31,6 +32,8 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.theme.lumo.Lumo;
+import com.vaadin.flow.theme.lumo.LumoThemeDefinition;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,6 +42,7 @@ import static com.university.project.utils.TransformUtils.*;
 
 @Route(value = "personal", layout = MainView.class)
 @PageTitle("PersonalBudget")
+@CssImport("./styles/views/personal/personal-view.css")
 public class PersonalBudgetView extends Div {
     private final UserService userService;
     private User user;
@@ -221,17 +225,35 @@ public class PersonalBudgetView extends Div {
         wrapperOnVLAndChart.setWidth("75%");
         wrapperOnVLAndChart.setHeight("50%");
 
-        VerticalLayout vlExpensesWithValue = new VerticalLayout(
-                expenseTotal,
+        VerticalLayout vlExpensesWithValue = new VerticalLayout();
+
+        HorizontalLayout vlExpenses = new HorizontalLayout();
+
+        VerticalLayout vlExpComponent1 = new VerticalLayout(
                 expenseTransport,
                 expenseHealth,
                 expenseFamily,
-                expenseGroceries,
+                expenseGroceries
+        );
+
+        VerticalLayout vlExpComponent2 = new VerticalLayout(
                 expenseGifts,
                 expenseEducation,
                 expenseHome,
                 expenseHobby
         );
+
+        vlExpenses.setWidth("100%");
+        vlExpComponent1.setWidth("50%");
+        vlExpComponent2.setWidth("50%");
+
+        vlExpenses.add(vlExpComponent1);
+        vlExpenses.add(vlExpComponent2);
+
+        expenseTotal.addClassName("text-exp-inc-total");
+        vlExpenses.addClassName("text-exp-inc");
+        vlExpensesWithValue.add(expenseTotal,vlExpenses);
+
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
 
@@ -493,13 +515,32 @@ public class PersonalBudgetView extends Div {
         wrapperOnVlAndChart.setWidth("75%");
         wrapperOnVlAndChart.setHeight("50%");
 
-        VerticalLayout vlIncomesWithValue = new VerticalLayout(
-                incomeTotal,
+        VerticalLayout vlIncomesWithValue = new VerticalLayout();
+
+        HorizontalLayout vlIncomes = new HorizontalLayout();
+
+        VerticalLayout vlIncComponent1 = new VerticalLayout(
                 incomeSalary,
-                incomeBonus,
+                incomeBonus
+        );
+
+        VerticalLayout vlIncComponent2 = new VerticalLayout(
                 incomeGift,
                 incomeReturn
         );
+
+        vlIncomes.setWidth("100%");
+        vlIncComponent1.setWidth("50%");
+        vlIncComponent2.setWidth("50%");
+
+        vlIncomes.add(vlIncComponent1);
+        vlIncomes.add(vlIncComponent2);
+
+        incomeTotal.addClassName("text-exp-inc-total");
+        vlIncomes.addClassName("text-exp-inc");
+        vlIncomesWithValue.add(incomeTotal,vlIncomes);
+
+
         fillUpListOfIncomesPerType();
         setUpIncomesDividedByCategoryInVL();
 

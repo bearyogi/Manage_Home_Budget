@@ -1,0 +1,18 @@
+.text-exp-inc-total
+{
+    color: #166FE6;
+    font-family: 'Trocchi', serif;
+    font-size: 45px;
+    font-weight: 500;
+    line-height: 48px;
+    margin: 25px auto;
+}
+
+.text-exp-inc *
+{
+    font-family: 'Trocchi', serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 48px;
+    margin: auto;
+}
