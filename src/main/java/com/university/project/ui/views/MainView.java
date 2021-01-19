@@ -40,7 +40,7 @@ import java.util.Optional;
 @PWA(name = "PersonalBudget", shortName = "Budget", enableInstallPrompt = false)
 public class MainView extends AppLayout {
 
-    static ComboBox<Family> cb = new ComboBox("Wybierz grupę");
+    static ComboBox<Family> cb = new ComboBox<>("Wybierz grupę");
     private final Tabs menu;
     private H1 viewTitle;
     private final AuthService authService;
@@ -106,7 +106,7 @@ public class MainView extends AppLayout {
         HorizontalLayout logoLayout = new HorizontalLayout();
         logoLayout.setId("logo");
         logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        logoLayout.add(new Image("images/logo.png", "ManageBudget logo"));
+        logoLayout.add(new Image("images/logo.svg", "ManageBudget logo"));
         logoLayout.add(new H1("ManageBudget"));
         layout.add(logoLayout, menu);
         return layout;
@@ -127,6 +127,12 @@ public class MainView extends AppLayout {
         tabs.setId("tabs");
         tabs.add(createMenuItems());
         tabs.add(cb);
+
+        tabs.addSelectedChangeListener(ev -> {
+            if (ev.getSelectedTab() != null)
+                clearCB();
+        });
+
         return tabs;
     }
 

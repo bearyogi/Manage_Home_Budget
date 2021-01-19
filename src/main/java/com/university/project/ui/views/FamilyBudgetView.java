@@ -8,6 +8,7 @@ import com.university.project.backend.service.FamilyService;
 import com.university.project.backend.service.IncomeService;
 import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
@@ -689,9 +690,4 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         chartIncomesTotal.drawChart();
     }
 
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        super.onDetach(detachEvent);
-        MainView.clearCB();
-    }
 }
