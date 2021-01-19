@@ -5,7 +5,7 @@ import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -35,6 +35,7 @@ public class CredentialsView extends HorizontalLayout {
     private final Label labelEmail = new Label();
     private final Label labelPhone = new Label();
 
+    private final H3 textTitle = new H3("Zmiana danych:");
     private final TextField textFieldUsername = new TextField("Nowy nick");
     private final PasswordField textFieldPassword = new PasswordField("Nowe hasło");
     private final TextField textFieldFirstName = new TextField("Nowe imię");
@@ -79,7 +80,18 @@ public class CredentialsView extends HorizontalLayout {
     }
 
     private void setUpLayout() {
-        VerticalLayout vlLabels = new VerticalLayout(
+
+        Div Layout = new Div();
+        Layout.setClassName("flex");
+
+
+        Div card = new Div();
+        Div container = new Div();
+
+        container.setClassName("container");
+
+        VerticalLayout vlLabels = new VerticalLayout();
+        vlLabels.add(
                 labelUsername,
                 labelFirstName,
                 labelLastName,
@@ -87,8 +99,23 @@ public class CredentialsView extends HorizontalLayout {
                 labelPhone
         );
 
-        vlLabels.setAlignItems(Alignment.END);
-        vlLabels.setId("vl-labels");
+        container.add(vlLabels);
+
+
+        vlLabels.setClassName("vl-labels");
+        Image avatar = new Image("images/user.svg", "Avatar");
+        avatar.setClassName("top-card");
+
+        card.setClassName("card");
+        card.add(avatar,container);
+
+
+        Div cardText = new Div();
+        Div containerText = new Div();
+
+        containerText.setClassName("container");
+
+        VerticalLayout vlTextFields = new VerticalLayout();
 
         Button buttonChangeCredentials = new Button("Zmień dane");
         buttonChangeCredentials.setId("button-change-credentials");
@@ -96,7 +123,7 @@ public class CredentialsView extends HorizontalLayout {
             updateUser();
         });
 
-        VerticalLayout vlTextFields = new VerticalLayout(
+        vlTextFields.add(
                 textFieldUsername,
                 textFieldPassword,
                 textFieldFirstName,
@@ -105,9 +132,17 @@ public class CredentialsView extends HorizontalLayout {
                 textFieldPhone,
                 buttonChangeCredentials
         );
-        vlTextFields.setId("vl-text-fields");
 
-        add(vlLabels, vlTextFields);
+        containerText.add(vlTextFields);
+        vlTextFields.setClassName("vl-labels");
+
+        cardText.setClassName("card");
+        textTitle.setClassName("text-title");
+        cardText.add(textTitle,containerText);
+
+        Layout.add(card,cardText);
+
+        add(Layout);
     }
 
     private void updateUser() {
