@@ -23,7 +23,7 @@ public class Income {
     private Integer incomeId;
 
     private String name;
-    private double value;
+    private Double value;
     private IncomeType incomeType;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)

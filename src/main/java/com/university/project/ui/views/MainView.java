@@ -114,16 +114,13 @@ public class MainView extends AppLayout {
 
     private Tabs createMenu() {
         cb.setItems(familyService.getAllByUser(AuthService.getUser()));
-        cb.setItemLabelGenerator(family -> family.getFamilyName());
+        cb.setItemLabelGenerator(Family::getFamilyName);
         cb.addValueChangeListener(e -> {
-            try{
+            if (e.getValue() != null) {
                 viewFamilyBudget(e.getValue().getFamilyId());
-            }catch(NullPointerException n){
-
             }
-
-            cb.setClearButtonVisible(true);
         });
+
         final Tabs tabs = new Tabs();
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
@@ -132,10 +129,15 @@ public class MainView extends AppLayout {
         tabs.add(cb);
         return tabs;
     }
+
     public static void updateCB(){
         cb.setItems(familyService.getAllByUser(AuthService.getUser()));
-
     }
+
+    public static void clearCB() {
+        cb.clear();
+    }
+
     private void viewFamilyBudget(int selectedFamily) {
         menu.setSelectedTab(null);
         UI.getCurrent().navigate(HomeView.class);

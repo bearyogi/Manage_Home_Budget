@@ -22,10 +22,10 @@ import java.time.LocalDate;
 
 public class IncomeForm extends FormLayout {
 
-    NumberField value = new NumberField("value");
-    TextField name = new TextField("name");
-    DatePicker date = new DatePicker("date");
-    ComboBox<IncomeType> incomeType = new ComboBox<>("incomeType");
+    public NumberField value = new NumberField("value");
+    public TextField name = new TextField("name");
+    public DatePicker date = new DatePicker("date");
+    public ComboBox<IncomeType> incomeType = new ComboBox<>("incomeType");
 
     Button save = new Button("Zapisz");
     Button delete = new Button("Usuń");
@@ -84,7 +84,7 @@ public class IncomeForm extends FormLayout {
         return new HorizontalLayout(save, delete, close);
     }
 
-    private void validateAndSave() {
+    public void validateAndSave() {
         try {
             binder.writeBean(income);
             fireEvent(new SaveEvent(this, income));

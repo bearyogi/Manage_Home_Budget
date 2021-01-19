@@ -18,12 +18,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Expense{
+
     @Id
     @GeneratedValue
     private Integer expenseId;
 
     private String name;
-    private double value;
+    private Double value;
     private ExpenseType expenseType;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)

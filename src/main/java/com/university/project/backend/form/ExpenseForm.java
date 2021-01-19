@@ -2,10 +2,7 @@ package com.university.project.backend.form;
 
 import com.university.project.backend.entity.Expense;
 import com.university.project.backend.entity.ExpenseType;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEvent;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -22,18 +19,17 @@ import java.time.LocalDate;
 
 public class ExpenseForm extends FormLayout {
 
-    NumberField value = new NumberField("value");
-    TextField name = new TextField("name");
-    DatePicker date = new DatePicker("date");
-    ComboBox<ExpenseType> expenseType = new ComboBox<>("expenseType");
+    public NumberField value = new NumberField("value");
+    public TextField name = new TextField("name");
+    public DatePicker date = new DatePicker("date");
+    public ComboBox<ExpenseType> expenseType = new ComboBox<>("expenseType");
 
-    Button save = new Button("Zapisz");
-    Button delete = new Button("Usuń");
-    Button close = new Button("Anuluj");
+    public Button save = new Button("Zapisz");
+    public Button delete = new Button("Usuń");
+    public Button close = new Button("Anuluj");
 
-    Binder<Expense> binder = new Binder<>(Expense.class);
+    public Binder<Expense> binder = new Binder<>(Expense.class);
     private Expense expense;
-
     public ExpenseForm() {
         expenseType.setItems(ExpenseType.values());
         value.setValue(0.0);
@@ -84,7 +80,7 @@ public class ExpenseForm extends FormLayout {
         return new HorizontalLayout(save, delete, close);
     }
 
-    private void validateAndSave() {
+    public void validateAndSave() {
         try {
             binder.writeBean(expense);
             fireEvent(new SaveEvent(this, expense));
