@@ -14,9 +14,10 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.theme.lumo.Lumo;
 
-
+@UIScope
 @Route(value = "login")
 @PageTitle("Login | ManageBudget ")
 @CssImport("./styles/views/login/login-view.css")

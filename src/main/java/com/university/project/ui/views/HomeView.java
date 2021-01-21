@@ -10,9 +10,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 
 import java.util.Optional;
 
+@UIScope
 @Route(value = "home", layout = MainView.class)
 @PageTitle("Home")
 @CssImport("./styles/views/home/home-view.css")
@@ -73,7 +76,7 @@ public class HomeView extends Div {
         }
     }
 
-
+    @UIScope
     public static class UserNotFoundException extends Exception {
 
     }

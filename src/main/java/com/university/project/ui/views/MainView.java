@@ -27,6 +27,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import java.util.Optional;
@@ -35,12 +37,13 @@ import java.util.Optional;
 /**
  * The main view is a top-level placeholder for other views.
  */
+@UIScope
 @JsModule("./styles/shared-styles.js")
 @CssImport("./styles/views/main/main-view.css")
 @PWA(name = "PersonalBudget", shortName = "Budget", enableInstallPrompt = false)
 public class MainView extends AppLayout {
 
-    static ComboBox<Family> cb = new ComboBox<>("Wybierz grupę");
+    public ComboBox<Family> cb;
     private final Tabs menu;
     private H1 viewTitle;
     private final Tabs tabs = new Tabs();
@@ -55,6 +58,7 @@ public class MainView extends AppLayout {
     });
 
     public MainView(AuthService authService, FamilyService familyService) {
+        this.cb = new ComboBox<>("Wybierz grupę");
         this.familyService = familyService;
         this.authService = authService;
         setPrimarySection(Section.DRAWER);
@@ -141,11 +145,11 @@ public class MainView extends AppLayout {
         return tabs;
     }
 
-    public static void updateCB(){
+    public  void updateCB(){
         cb.setItems(familyService.getAllByUser(AuthService.getUser()));
     }
 
-    public static void clearCB() {
+    public  void clearCB() {
         cb.clear();
     }
 
@@ -173,6 +177,7 @@ public class MainView extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
         viewTitle.setText(getCurrentPageTitle());
+        updateCB();
     }
 
 

@@ -5,6 +5,7 @@ import com.university.project.backend.entity.Family;
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.FamilyService;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -78,10 +79,10 @@ public class FamiliesView extends VerticalLayout {
                 familyToSave.addUser(activeUser);
 
                 familyService.save(familyToSave);
-
-                refreshComboBoxInMainView();
                 fetchAllGroups();
                 dialog.close();
+                UI.getCurrent().navigate(FamilyBudgetView.class, familyToSave.getFamilyId());
+
             }
         });
 
@@ -107,7 +108,6 @@ public class FamiliesView extends VerticalLayout {
                 familyToUpdate.addUser(activeUser);
                 familyService.update(familyToUpdate);
                 fetchAllGroups();
-                MainView.updateCB();
                 Notification.show("Pomyślnie dodano do grupy!", 5000, Notification.Position.MIDDLE);
             }
         } else {
@@ -115,9 +115,6 @@ public class FamiliesView extends VerticalLayout {
         }
     }
 
-    private void refreshComboBoxInMainView() {
-        MainView.updateCB();
-    }
 
     private void configureGrid() {
         gridFamilies.addClassName("families-grid");
