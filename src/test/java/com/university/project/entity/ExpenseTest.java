@@ -3,6 +3,7 @@ package com.university.project.entity;
 import com.university.project.backend.entity.Budget;
 import com.university.project.backend.entity.Expense;
 import com.university.project.backend.entity.ExpenseType;
+import com.university.project.backend.entity.User;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import java.time.LocalDate;
@@ -40,9 +41,10 @@ public class ExpenseTest {
     public void shouldCreateFullBudget(){
         //Given
         Budget budget = new Budget();
+        User user = new User();
 
         //When
-        Expense testExpense = new Expense(1,"1",Double.valueOf(1),ExpenseType.EDUCATION,LocalDate.of(1999,06,03),budget);
+        Expense testExpense = new Expense(1,"1",Double.valueOf(1),ExpenseType.EDUCATION,LocalDate.of(1999,06,03),budget, user);
 
         //Then
         assertEquals(testExpense,fullExpense,"Should create full expense, but did not.");

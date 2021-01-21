@@ -279,6 +279,12 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         expenseGrid.addClassName("expense-grid");
         expenseGrid.setSizeFull();
         expenseGrid.setColumns("name", "value", "expenseType", "date");
+        expenseGrid.addColumn(expense -> {
+            if (expense.getUser() != null)
+                return expense.getUser().getFirstName() + " " + expense.getUser().getLastName();
+            else
+                return "null";
+        }).setHeader("User");
 
         expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
         expenseGrid.asSingleSelect().addValueChangeListener(evt -> editExpense(evt.getValue()));
@@ -377,7 +383,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private void saveExpense(ExpenseForm.SaveEvent evt) {
         Expense expenseToSave = evt.getExpense();
         expenseToSave.setBudget(selectedFamily.getBudget());
+        expenseToSave.setUser(user);
         expenseService.save(expenseToSave);
+
         updateBalance();
         refreshAllExpensesViews();
         closeExpenseEditor();
@@ -477,6 +485,12 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         incomeGrid.addClassName("income-grid");
         incomeGrid.setSizeFull();
         incomeGrid.setColumns("name", "value", "incomeType", "date");
+        incomeGrid.addColumn(income -> {
+            if (income.getUser() != null)
+                return income.getUser().getFirstName() + " " + income.getUser().getLastName();
+            else
+                return "null";
+        }).setHeader("User");
 
         incomeGrid.getColumns().forEach(col -> col.setAutoWidth(true));
         incomeGrid.asSingleSelect().addValueChangeListener(event -> editIncome(event.getValue()));
@@ -486,7 +500,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private void saveIncome(IncomeForm.SaveEvent evt) {
         Income incomeToSave = evt.getIncome();
         incomeToSave.setBudget(selectedFamily.getBudget());
+        incomeToSave.setUser(user);
         incomeService.save(incomeToSave);
+
         updateBalance();
         refreshAllIncomeViews();
         closeIncomeEditor();

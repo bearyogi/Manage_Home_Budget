@@ -32,6 +32,9 @@ public class Income {
     @ManyToOne
     private Budget budget;
 
+    @ManyToOne
+    private User user;
+
     @Override
     public int hashCode() {
         if (incomeId != null) {

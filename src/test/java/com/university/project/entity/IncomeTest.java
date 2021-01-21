@@ -3,6 +3,7 @@ package com.university.project.entity;
 import com.university.project.backend.entity.Budget;
 import com.university.project.backend.entity.Income;
 import com.university.project.backend.entity.IncomeType;
+import com.university.project.backend.entity.User;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -41,9 +42,10 @@ public class IncomeTest {
     public void shouldCreateFullBudget(){
         //Given
         Budget budget = new Budget();
+        User user = new User();
 
         //When
-        Income testExpense = new Income(1,"1",Double.valueOf(1), IncomeType.BONUS,LocalDate.of(1999,06,03),budget);
+        Income testExpense = new Income(1,"1",Double.valueOf(1), IncomeType.BONUS,LocalDate.of(1999,06,03),budget, user);
 
         //Then
         assertEquals(testExpense, fullIncome,"Should create full income, but did not.");

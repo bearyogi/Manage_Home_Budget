@@ -33,6 +33,9 @@ public class Expense{
     @ManyToOne
     private Budget budget;
 
+    @ManyToOne
+    private User user;
+
     @Override
     public int hashCode() {
         if (expenseId != null) {

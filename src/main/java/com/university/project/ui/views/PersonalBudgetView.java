@@ -353,6 +353,7 @@ public class PersonalBudgetView extends Div {
     private void saveExpense(ExpenseForm.SaveEvent evt) {
         Expense expenseToSave = evt.getExpense();
         expenseToSave.setBudget(user.getPrivateBudget());
+        expenseToSave.setUser(user);
         expenseService.save(expenseToSave);
 
         refreshAllExpensesViews();
@@ -469,6 +470,7 @@ public class PersonalBudgetView extends Div {
     private void saveIncome(IncomeForm.SaveEvent evt) {
         Income incomeToSave = evt.getIncome();
         incomeToSave.setBudget(user.getPrivateBudget());
+        incomeToSave.setUser(user);
         incomeService.save(incomeToSave);
 
         refreshAllIncomeViews();
