@@ -18,7 +18,7 @@ import java.util.Optional;
 @CssImport("./styles/views/home/home-view.css")
 public class HomeView extends Div {
     private final UserService userService;
-    private final H2 appName = new H2("Zarządzaj presonalnym lub grupowym budżetem już teraz!");
+    private final H2 appName = new H2("Zarządzaj personalnym lub grupowym budżetem już teraz!");
 
     private User user;
 

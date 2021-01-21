@@ -19,7 +19,6 @@ import com.vaadin.flow.component.html.Div;
 
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -33,8 +32,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.theme.lumo.Lumo;
-import com.vaadin.flow.theme.lumo.LumoThemeDefinition;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -155,9 +152,9 @@ public class PersonalBudgetView extends Div {
         pages.setSizeFull();
 
         tabs.addSelectedChangeListener(event -> {
-           tabsToPages.values().forEach(page -> page.setVisible(false));
-           Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
-           selectedPage.setVisible(true);
+            tabsToPages.values().forEach(page -> page.setVisible(false));
+            Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
+            selectedPage.setVisible(true);
         });
 
         add(tabs, pages);
@@ -220,12 +217,12 @@ public class PersonalBudgetView extends Div {
         incomesLabel.addClassName("text-total");
         expensesLabel.addClassName("text-total");
 
-        vlExpTotal.add(incomesLabel,chartIncomesTotal);
-        vlIncTotal.add(expensesLabel,chartExpensesTotal);
+        vlExpTotal.add(incomesLabel, chartIncomesTotal);
+        vlIncTotal.add(expensesLabel, chartExpensesTotal);
 
         balanceLabel.setClassName("numberCircle");
 
-        vlTotal.add(vlExpTotal,vlIncTotal);
+        vlTotal.add(vlExpTotal, vlIncTotal);
 
         Div circle = new Div();
         circle.addClassName("circle");
@@ -281,7 +278,7 @@ public class PersonalBudgetView extends Div {
 
         expenseTotal.addClassName("text-exp-inc-total");
         vlExpenses.addClassName("text-exp-inc");
-        vlExpensesWithValue.add(expenseTotal,vlExpenses);
+        vlExpensesWithValue.add(expenseTotal, vlExpenses);
         vlExpensesWithValue.addClassName("show-div");
 
         fillUpListOfExpensesPerType();
@@ -331,7 +328,7 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
+        if (flag == false) series.add(new DataSeriesItem("Brak wydatków", 1));
         Configuration config = chartExpenses.getConfiguration();
         config.setTitle("Rozkład wydatków względem typu:");
         config.setSeries(series);
@@ -347,7 +344,7 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
+        if (flag == false) series.add(new DataSeriesItem("Brak wydatków", 1));
         Configuration config = chartExpensesTotal.getConfiguration();
         config.setSeries(series);
         chartExpensesTotal.drawChart();
@@ -370,7 +367,7 @@ public class PersonalBudgetView extends Div {
 
     private void refreshAllExpensesViews() {
         fetchAllUserExpenses();
-        updateListOfExpenses();
+        updateExpensesInGrid();
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
         updateExpenseChartData();
@@ -381,20 +378,20 @@ public class PersonalBudgetView extends Div {
         filterExpenseValue.setPlaceholder("Filtruj kwote");
         filterExpenseValue.setClearButtonVisible(true);
         filterExpenseValue.setValueChangeMode(ValueChangeMode.LAZY);
-        filterExpenseValue.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseValue.addValueChangeListener(e -> updateExpensesInGrid());
 
         filterExpenseName.setPlaceholder("Filtruj opis");
         filterExpenseName.setClearButtonVisible(true);
         filterExpenseName.setValueChangeMode(ValueChangeMode.LAZY);
-        filterExpenseName.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseName.addValueChangeListener(e -> updateExpensesInGrid());
 
         filterExpenseType.setPlaceholder("Filtruj typ");
         filterExpenseType.setClearButtonVisible(true);
-        filterExpenseType.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseType.addValueChangeListener(e -> updateExpensesInGrid());
 
         filterExpenseDate.setPlaceholder("Filtruj date");
         filterExpenseDate.setClearButtonVisible(true);
-        filterExpenseDate.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseDate.addValueChangeListener(e -> updateExpensesInGrid());
 
         addExpenseButton.addClickListener(click -> {
             if (expenseForm.isVisible()) {
@@ -415,6 +412,19 @@ public class PersonalBudgetView extends Div {
         return toolbar;
     }
 
+    private void updateExpensesInGrid() {
+        List<Expense> filteredList = new ArrayList<>(allExpenses);
+        if (filterExpenseValue.getValue() != null && filterExpenseValue.getValue() != 0.0)
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getValue().equals(filterExpenseValue.getValue())).collect(Collectors.toUnmodifiableList()));
+        if (filterExpenseName.getValue() != null && !filterExpenseName.getValue().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> containsIgnoreCase(ex.getName(), filterExpenseName.getValue())).collect(Collectors.toUnmodifiableList()));
+        if (filterExpenseDate.getValue() != null && !filterExpenseDate.getValue().toString().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getDate().equals(filterExpenseDate.getValue())).collect(Collectors.toUnmodifiableList()));
+        if (filterExpenseType.getValue() != null && !filterExpenseType.getValue().toString().isEmpty())
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getExpenseType() == filterExpenseType.getValue()).collect(Collectors.toUnmodifiableList()));
+        expenseGrid.setItems(filteredList);
+    }
+
     private void editExpense(Expense expense) {
         if (expense == null) {
             closeExpenseEditor();
@@ -424,10 +434,12 @@ public class PersonalBudgetView extends Div {
             addClassName("editing");
         }
     }
-    private void updateBalance(){
+
+    private void updateBalance() {
         mainLayoutTotal.removeAll();
         setUpTotalLayout();
     }
+
     private void openExpenseEditor() {
         expenseGrid.asSingleSelect().clear();
         editExpense(new Expense());
@@ -442,19 +454,6 @@ public class PersonalBudgetView extends Div {
         addExpenseButton.setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
     }
 
-    private void updateListOfExpenses() {
-        List<Expense> filteredList = new ArrayList<>(allExpenses);
-        if (filterExpenseValue.getValue() != null && filterExpenseValue.getValue() != 0.0)
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getValue() == filterExpenseValue.getValue()).collect(Collectors.toUnmodifiableList()));
-        if (filterExpenseName.getValue() != null && !filterExpenseName.getValue().isEmpty())
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getName().equalsIgnoreCase(filterExpenseName.getValue())).collect(Collectors.toUnmodifiableList()));
-        if (filterExpenseDate.getValue() != null && !filterExpenseDate.getValue().toString().isEmpty())
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getDate().equals(filterExpenseDate.getValue())).collect(Collectors.toUnmodifiableList()));
-        if (filterExpenseType.getValue() != null && !filterExpenseType.getValue().toString().isEmpty())
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getExpenseType() == filterExpenseType.getValue()).collect(Collectors.toUnmodifiableList()));
-        //System.out.println("Filtered list size = " + filteredList.size());
-        expenseGrid.setItems(filteredList);
-    }
 
     // Incomes
     private void configureIncomeGrid() {
@@ -484,7 +483,7 @@ public class PersonalBudgetView extends Div {
 
     private void refreshAllIncomeViews() {
         fetchAllUserIncomes();
-        updateListOfIncomes();
+        updateIncomesInGrid();
         fillUpListOfIncomesPerType();
         setUpIncomesDividedByCategoryInVL();
         updateIncomeChartData();
@@ -495,20 +494,20 @@ public class PersonalBudgetView extends Div {
         filterIncomeName.setPlaceholder("Filtruj opis");
         filterIncomeName.setClearButtonVisible(true);
         filterIncomeName.setValueChangeMode(ValueChangeMode.LAZY);
-        filterIncomeName.addValueChangeListener(e -> updateListOfIncomes());
+        filterIncomeName.addValueChangeListener(e -> updateIncomesInGrid());
 
         filterIncomeValue.setPlaceholder("Filtruj kwotę");
         filterIncomeValue.setClearButtonVisible(true);
         filterIncomeValue.setValueChangeMode(ValueChangeMode.LAZY);
-        filterIncomeValue.addValueChangeListener(e -> updateListOfIncomes());
+        filterIncomeValue.addValueChangeListener(e -> updateIncomesInGrid());
 
         filterIncomeType.setPlaceholder("Filtruj typ");
         filterIncomeType.setClearButtonVisible(true);
-        filterIncomeType.addValueChangeListener(e -> updateListOfIncomes());
+        filterIncomeType.addValueChangeListener(e -> updateIncomesInGrid());
 
         filterIncomeDate.setPlaceholder("Filtruj datę");
         filterIncomeDate.setClearButtonVisible(true);
-        filterIncomeDate.addValueChangeListener(e -> updateListOfIncomes());
+        filterIncomeDate.addValueChangeListener(e -> updateIncomesInGrid());
 
         addIncomeButton.addClickListener(click -> {
             if (incomeForm.isVisible()) {
@@ -579,7 +578,7 @@ public class PersonalBudgetView extends Div {
 
         incomeTotal.addClassName("text-exp-inc-total");
         vlIncomes.addClassName("text-exp-inc");
-        vlIncomesWithValue.add(incomeTotal,vlIncomes);
+        vlIncomesWithValue.add(incomeTotal, vlIncomes);
         vlIncomesWithValue.addClassName("show-div");
 
 
@@ -591,7 +590,7 @@ public class PersonalBudgetView extends Div {
 
         updateIncomeChartData();
         chartLayout.add(chartIncomes);
-        wrapperOnVlAndChart.add(vlIncomesWithValue,chartLayout);
+        wrapperOnVlAndChart.add(vlIncomesWithValue, chartLayout);
         mainLayoutIncomes.add(wrapperOnVlAndChart);
     }
 
@@ -599,7 +598,7 @@ public class PersonalBudgetView extends Div {
         totalIncomes = 0.0;
         listIncomes.clear();
 
-        for (IncomeType element: IncomeType.values()) {
+        for (IncomeType element : IncomeType.values()) {
             List<Income> filteredList = allIncomes.stream().filter(inc -> inc.getIncomeType() == element).collect(Collectors.toList());
             var incomePerType = filteredList.stream().mapToDouble(Income::getValue).sum();
             totalIncomes += incomePerType;
@@ -624,7 +623,7 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów",1));
+        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów", 1));
         Configuration config = chartIncomes.getConfiguration();
         config.setTitle("Rozkład przychodow względem typu:");
         config.setSeries(series);
@@ -640,18 +639,18 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów",1));
+        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów", 1));
         Configuration config = chartIncomesTotal.getConfiguration();
         config.setSeries(series);
         chartIncomesTotal.drawChart();
     }
 
-    private void updateListOfIncomes() {
+    private void updateIncomesInGrid() {
         List<Income> filteredList = new ArrayList<>(allIncomes);
         if (filterIncomeValue.getValue() != null && filterIncomeValue.getValue() != 0.0)
-            filteredList.retainAll(allIncomes.stream().filter(in -> in.getValue() == filterIncomeValue.getValue()).collect(Collectors.toList()));
-        if(filterIncomeName.getValue() != null && !filterIncomeName.getValue().isEmpty())
-            filteredList.retainAll(allIncomes.stream().filter(in -> in.getName().equalsIgnoreCase(filterIncomeName.getValue())).collect(Collectors.toList()));
+            filteredList.retainAll(allIncomes.stream().filter(in -> in.getValue().equals(filterIncomeValue.getValue())).collect(Collectors.toList()));
+        if (filterIncomeName.getValue() != null && !filterIncomeName.getValue().isEmpty())
+            filteredList.retainAll(allIncomes.stream().filter(in -> containsIgnoreCase(in.getName(), filterIncomeName.getValue())).collect(Collectors.toList()));
         if (filterIncomeDate.getValue() != null && !filterIncomeDate.getValue().toString().isEmpty())
             filteredList.retainAll(allIncomes.stream().filter(in -> in.getDate().equals(filterIncomeDate.getValue())).collect(Collectors.toList()));
         if (filterIncomeType.getValue() != null && !filterIncomeType.getValue().toString().isEmpty())

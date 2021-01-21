@@ -8,9 +8,7 @@ import com.university.project.backend.service.FamilyService;
 import com.university.project.backend.service.IncomeService;
 import com.university.project.backend.service.UserService;
 import com.university.project.utils.Constants;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
 import com.vaadin.flow.component.charts.model.ChartType;
@@ -41,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.university.project.utils.TransformUtils.containsIgnoreCase;
 import static com.university.project.utils.TransformUtils.roundOff;
 
 @PageTitle("Family Budget")
@@ -391,7 +390,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
     private void refreshAllExpensesViews() {
         fetchAllFamilyExpenses();
-        updateListOfExpenses();
+        updateExpensesInGrid();
         fillUpListOfExpensesPerType();
         setUpExpensesDividedByCategoryInVL();
         updateExpenseChartData();
@@ -402,20 +401,20 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         filterExpenseValue.setPlaceholder("Filtruj kwote");
         filterExpenseValue.setClearButtonVisible(true);
         filterExpenseValue.setValueChangeMode(ValueChangeMode.LAZY);
-        filterExpenseValue.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseValue.addValueChangeListener(e -> updateExpensesInGrid());
 
         filterExpenseName.setPlaceholder("Filtruj opis");
         filterExpenseName.setClearButtonVisible(true);
         filterExpenseName.setValueChangeMode(ValueChangeMode.LAZY);
-        filterExpenseName.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseName.addValueChangeListener(e -> updateExpensesInGrid());
 
         filterExpenseType.setPlaceholder("Filtruj typ");
         filterExpenseType.setClearButtonVisible(true);
-        filterExpenseType.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseType.addValueChangeListener(e -> updateExpensesInGrid());
 
         filterExpenseDate.setPlaceholder("Filtruj date");
         filterExpenseDate.setClearButtonVisible(true);
-        filterExpenseDate.addValueChangeListener(e -> updateListOfExpenses());
+        filterExpenseDate.addValueChangeListener(e -> updateExpensesInGrid());
 
         addExpenseButton.addClickListener(click -> {
             if (expenseForm.isVisible()) {
@@ -460,12 +459,12 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         addExpenseButton.setIcon(new Icon(VaadinIcon.ARROW_RIGHT));
     }
 
-    private void updateListOfExpenses() {
+    private void updateExpensesInGrid() {
         List<Expense> filteredList = new ArrayList<>(allExpenses);
         if (filterExpenseValue.getValue() != null && filterExpenseValue.getValue() != 0.0)
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getValue() == filterExpenseValue.getValue()).collect(Collectors.toUnmodifiableList()));
+            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getValue().equals(filterExpenseValue.getValue())).collect(Collectors.toUnmodifiableList()));
         if (filterExpenseName.getValue() != null && !filterExpenseName.getValue().isEmpty())
-            filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getName().equalsIgnoreCase(filterExpenseName.getValue())).collect(Collectors.toUnmodifiableList()));
+            filteredList.retainAll(allExpenses.stream().filter(ex -> containsIgnoreCase(ex.getName(), filterExpenseName.getValue())).collect(Collectors.toUnmodifiableList()));
         if (filterExpenseDate.getValue() != null && !filterExpenseDate.getValue().toString().isEmpty())
             filteredList.retainAll(allExpenses.stream().filter(ex -> ex.getDate().equals(filterExpenseDate.getValue())).collect(Collectors.toUnmodifiableList()));
         if (filterExpenseType.getValue() != null && !filterExpenseType.getValue().toString().isEmpty())
@@ -649,9 +648,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private void updateListOfIncomes() {
         List<Income> filteredList = new ArrayList<>(allIncomes);
         if (filterIncomeValue.getValue() != null && filterIncomeValue.getValue() != 0.0)
-            filteredList.retainAll(allIncomes.stream().filter(in -> in.getValue() == filterIncomeValue.getValue()).collect(Collectors.toList()));
-        if(filterIncomeName.getValue() != null && !filterIncomeName.getValue().isEmpty())
-            filteredList.retainAll(allIncomes.stream().filter(in -> in.getName().equalsIgnoreCase(filterIncomeName.getValue())).collect(Collectors.toList()));
+            filteredList.retainAll(allIncomes.stream().filter(in -> in.getValue().equals(filterIncomeValue.getValue())).collect(Collectors.toList()));
+        if (filterIncomeName.getValue() != null && !filterIncomeName.getValue().isEmpty())
+            filteredList.retainAll(allIncomes.stream().filter(in -> containsIgnoreCase(in.getName(), filterIncomeName.getValue())).collect(Collectors.toList()));
         if (filterIncomeDate.getValue() != null && !filterIncomeDate.getValue().toString().isEmpty())
             filteredList.retainAll(allIncomes.stream().filter(in -> in.getDate().equals(filterIncomeDate.getValue())).collect(Collectors.toList()));
         if (filterIncomeType.getValue() != null && !filterIncomeType.getValue().toString().isEmpty())

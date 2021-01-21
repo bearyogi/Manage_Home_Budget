@@ -6,8 +6,10 @@ import com.university.project.utils.Constants;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -40,16 +42,17 @@ public class CredentialsView extends HorizontalLayout {
     private final PasswordField textFieldPassword = new PasswordField("Nowe hasło");
     private final TextField textFieldFirstName = new TextField("Nowe imię");
     private final TextField textFieldLastName = new TextField("Nowe nazwisko");
-    private final TextField textFieldEmail = new TextField("Nowy email");
+    private final EmailField textFieldEmail = new EmailField("Nowy email");
     private final TextField textFieldPhone = new TextField("Nowy numer telefonu");
 
     public CredentialsView(UserService userService) {
         addClassName("credentials-view");
         this.userService = userService;
         setSizeFull();
-
         fetchActiveUser();
+
         fillUpLabelsWithUserCredentials();
+        setUpTextFields();
         setUpLayout();
     }
 
@@ -77,6 +80,39 @@ public class CredentialsView extends HorizontalLayout {
         labelLastName.setText("Last Name: " + user.getLastName());
         labelEmail.setText("Email: " + user.getEmail());
         labelPhone.setText("Phone: " + user.getPhone());
+    }
+
+    private void setUpTextFields() {
+        textFieldPhone.setPattern("[0-9]*");
+        textFieldPhone.setPreventInvalidInput(true);
+        textFieldPhone.setMaxLength(9);
+/*        textFieldPhone.addValueChangeListener(ev -> {
+            String currentName = ev.getValue();
+            if (currentName != null && !currentName.isEmpty()) {
+                if (currentName.length() != 9) {
+                    textFieldPhone.setErrorMessage("Wpisz 9 cyfr!");
+                    System.out.println(textFieldPhone.getErrorMessage());
+                }
+            }
+        });*/
+
+        textFieldEmail.setErrorMessage("Wpisz poprawny email");
+
+/*        textFieldFirstName.addValueChangeListener(ev -> {
+            String currentName = ev.getValue();
+            if (currentName != null && !currentName.isEmpty()) {
+                if (!currentName.matches("^[A-Z]([a-z])+$"))
+                    textFieldFirstName.setErrorMessage("Imię z wielkiej litery!");
+            }
+        });
+
+        textFieldLastName.addValueChangeListener(ev -> {
+            String currentName = ev.getValue();
+            if (currentName != null && !currentName.isEmpty()) {
+                if (!currentName.matches("^[A-Z]([a-z])+$"))
+                    textFieldLastName.setErrorMessage("Nazwisko z wielkiej litery!");
+            }
+        });*/
     }
 
     private void setUpLayout() {
@@ -107,7 +143,7 @@ public class CredentialsView extends HorizontalLayout {
         avatar.setClassName("top-card");
 
         card.setClassName("card");
-        card.add(avatar,container);
+        card.add(avatar, container);
 
 
         Div cardText = new Div();
@@ -138,9 +174,9 @@ public class CredentialsView extends HorizontalLayout {
 
         cardText.setClassName("card");
         textTitle.setClassName("text-title");
-        cardText.add(textTitle,containerText);
+        cardText.add(textTitle, containerText);
 
-        Layout.add(card,cardText);
+        Layout.add(card, cardText);
 
         add(Layout);
     }
@@ -158,17 +194,33 @@ public class CredentialsView extends HorizontalLayout {
             user.setPasswordHash(passwordHash);
         }
 
-        if (textFieldFirstName.getValue() != null && !textFieldFirstName.isEmpty())
-            user.setFirstName(textFieldFirstName.getValue());
+        if (textFieldFirstName.getValue() != null && !textFieldFirstName.isEmpty()) {
+            if (textFieldFirstName.getValue().matches("^[A-Z]([a-z])+$")) {
+                user.setFirstName(textFieldFirstName.getValue());
+            } else {
+                Notification.show("Imię powinno być z wielkiej litery!", 2500, Notification.Position.MIDDLE);
+            }
+        }
 
-        if (textFieldLastName.getValue() != null && !textFieldLastName.isEmpty())
-            user.setLastName(textFieldLastName.getValue());
+        if (textFieldLastName.getValue() != null && !textFieldLastName.isEmpty()) {
+            if (textFieldLastName.getValue().matches("^[A-Z]([a-z])+$")) {
+                user.setLastName(textFieldLastName.getValue());
+            } else {
+                Notification.show("Nazwisko powinno być z wielkiej litery!", 2500, Notification.Position.MIDDLE);
+            }
+        }
 
-        if (textFieldEmail.getValue() != null && !textFieldEmail.isEmpty())
+        if (textFieldEmail.getValue() != null && !textFieldEmail.isEmpty()
+                && textFieldEmail.getErrorMessage().isEmpty())
             user.setEmail(textFieldEmail.getValue());
 
-        if (textFieldPhone.getValue() != null && !textFieldPhone.isEmpty())
-            user.setPhone(textFieldPhone.getValue());
+        if (textFieldPhone.getValue() != null && !textFieldPhone.isEmpty()) {
+            if (textFieldPhone.getValue().length() == 9) {
+                user.setPhone(textFieldPhone.getValue());
+            } else {
+                Notification.show("Telefon powinien mieć 9 cyfr!", 2500, Notification.Position.MIDDLE);
+            }
+        }
 
         user = userService.update(user);
 

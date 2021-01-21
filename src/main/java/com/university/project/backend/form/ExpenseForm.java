@@ -30,6 +30,7 @@ public class ExpenseForm extends FormLayout {
 
     public Binder<Expense> binder = new Binder<>(Expense.class);
     private Expense expense;
+
     public ExpenseForm() {
         expenseType.setItems(ExpenseType.values());
         value.setValue(0.0);
