@@ -132,6 +132,33 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         removeAll();
     }
 
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, Integer id) {
+        //beforeEvent.getUI().removeAll();
+        selectedFamily = familyService.get(id).get();
+        setViewContent();
+    }
+
+    private void setViewContent() {
+        fetchFreshUser();
+        fetchAllFamilyExpenses();
+        fetchAllFamilyIncomes();
+        setUpTabs();
+        this.tabs.setSelectedTab(tabIncomes);
+        this.tabs.setSelectedTab(tabExpenses);
+        setUpExpenseLayout();
+        setUpIncomeLayout();
+        setUpTotalLayout();
+    }
+
+    private void fetchFreshUser() {
+        try {
+            fetchUserById();
+        } catch (PersonalBudgetView.UserNotFoundException e) {
+            System.out.println("User has not been found!");
+        }
+    }
+
     private void fetchUserById() throws PersonalBudgetView.UserNotFoundException {
         Integer userId = (Integer) VaadinSession.getCurrent().getAttribute(Constants.USER_ID);
         Optional<User> fetchedUpdatedUser = userService.get(userId);
@@ -150,13 +177,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         allIncomes = incomeService.getAllByBudget(selectedFamily.getBudget());
     }
 
-    private void fetchFreshUser() {
-        try {
-            fetchUserById();
-        } catch (PersonalBudgetView.UserNotFoundException e) {
-            System.out.println("User has not been found!");
-        }
-    }
     private void setUpExpenseLayout() {
         configureExpenseGrid();
         setUpExpensePieChart();
@@ -253,25 +273,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         });
         add(tabs, pages);
 
-    }
-
-    @Override
-    public void setParameter(BeforeEvent beforeEvent, Integer id) {
-        //beforeEvent.getUI().removeAll();
-        selectedFamily = familyService.get(id).get();
-        setViewContent();
-    }
-
-    private void setViewContent() {
-        fetchFreshUser();
-        fetchAllFamilyExpenses();
-        fetchAllFamilyIncomes();
-        setUpTabs();
-        this.tabs.setSelectedTab(tabIncomes);
-        this.tabs.setSelectedTab(tabExpenses);
-        setUpExpenseLayout();
-        setUpIncomeLayout();
-        setUpTotalLayout();
     }
 
     private void configureExpenseGrid() {
