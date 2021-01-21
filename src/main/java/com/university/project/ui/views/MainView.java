@@ -43,6 +43,7 @@ public class MainView extends AppLayout {
     static ComboBox<Family> cb = new ComboBox<>("Wybierz grupę");
     private final Tabs menu;
     private H1 viewTitle;
+    private final Tabs tabs = new Tabs();
     private final AuthService authService;
     private static FamilyService familyService;
     private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
@@ -77,9 +78,8 @@ public class MainView extends AppLayout {
 
         ContextMenu contextMenu = new ContextMenu(avatar);
         contextMenu.setOpenOnClick(true);
-        contextMenu.addItem("Settings",
-                e -> Notification.show("Not implemented yet.", 3000,
-                        Notification.Position.BOTTOM_CENTER));
+        contextMenu.addItem("Credentials",
+                e -> navigateToCredentials());
         contextMenu.addItem("Log Out",
                 e -> {
                     logout();
@@ -88,6 +88,11 @@ public class MainView extends AppLayout {
         layout.add(avatar);
         layout.add(toggleButton);
         return layout;
+    }
+
+    private void navigateToCredentials() {
+        tabs.setSelectedIndex(1);
+        UI.getCurrent().navigate(CredentialsView.class);
     }
 
     private void logout() {
@@ -121,7 +126,7 @@ public class MainView extends AppLayout {
             }
         });
 
-        final Tabs tabs = new Tabs();
+
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         tabs.addThemeVariants(TabsVariant.LUMO_MINIMAL);
         tabs.setId("tabs");
