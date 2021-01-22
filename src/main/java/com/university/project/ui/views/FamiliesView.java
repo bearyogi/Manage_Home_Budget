@@ -81,7 +81,8 @@ public class FamiliesView extends VerticalLayout {
                 familyService.save(familyToSave);
                 fetchAllGroups();
                 dialog.close();
-                UI.getCurrent().navigate(FamilyBudgetView.class, familyToSave.getFamilyId());
+                UI.getCurrent().navigate(DummyView.class);
+                UI.getCurrent().navigate(FamiliesView.class);
 
             }
         });
