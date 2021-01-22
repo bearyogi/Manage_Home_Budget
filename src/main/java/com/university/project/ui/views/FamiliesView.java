@@ -53,7 +53,14 @@ public class FamiliesView extends VerticalLayout {
         buttonJoinToFamily.addClickListener(click -> {
             tryAddUserToFamily();
         });
-        add(new HorizontalLayout(buttonAddFamily, buttonJoinToFamily));
+
+        Button buttonDeleteFamily = new Button("Usuń grupę", new Icon(VaadinIcon.DEL));
+        buttonDeleteFamily.setIconAfterText(true);
+        buttonDeleteFamily.addClickListener(click -> {
+           tryDeleteFamily();
+        });
+
+        add(new HorizontalLayout(buttonAddFamily, buttonJoinToFamily, buttonDeleteFamily));
     }
 
     private void showAddFamilyDialog() {
@@ -87,6 +94,8 @@ public class FamiliesView extends VerticalLayout {
             }
         });
 
+
+
         Button cancelButton = new Button("Anuluj", event -> {
             dialog.close();
         });
@@ -114,6 +123,30 @@ public class FamiliesView extends VerticalLayout {
         } else {
             Notification.show("Musisz zaznaczyć grupę do której chcesz dołączyć!", 5000, Notification.Position.MIDDLE);
         }
+    }
+
+    private void tryDeleteFamily() {
+        var selectedFamily = gridFamilies.getSelectionModel().getFirstSelectedItem();
+        if (selectedFamily.isPresent()) {
+            Family selFamily = selectedFamily.get();
+            if (selFamily.isUserInFamily(activeUser)) {
+                if (userIsFamilyOwner(selFamily)) {
+                    familyService.delete(selFamily);
+                    fetchAllGroups();
+                    Notification.show("Grupa pomyślnie usunięta!", 2500, Notification.Position.MIDDLE);
+                } else {
+                    Notification.show("Nie jesteś właścicielem grupy!", 2500, Notification.Position.MIDDLE);
+                }
+            } else {
+                Notification.show("Nie należysz do tej grupy!", 2500, Notification.Position.MIDDLE);
+            }
+        } else {
+            Notification.show("Musisz zaznaczyć grupę, którą chcesz usunąć!", 2500, Notification.Position.MIDDLE);
+        }
+    }
+
+    private boolean userIsFamilyOwner(Family selectedFamily) {
+        return selectedFamily.getUsers().iterator().next().equals(activeUser);
     }
 
 
