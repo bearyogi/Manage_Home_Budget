@@ -287,7 +287,10 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         }).setHeader("User");
 
         expenseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
-        expenseGrid.asSingleSelect().addValueChangeListener(evt -> editExpense(evt.getValue()));
+        expenseGrid.asSingleSelect().addValueChangeListener(evt -> {
+            if(evt.getValue() != null && evt.getValue().getUser().equals(activeUser))
+                editExpense(evt.getValue());
+        });
         expenseGrid.setItems(allExpenses);
     }
 
@@ -493,7 +496,10 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         }).setHeader("User");
 
         incomeGrid.getColumns().forEach(col -> col.setAutoWidth(true));
-        incomeGrid.asSingleSelect().addValueChangeListener(event -> editIncome(event.getValue()));
+        incomeGrid.asSingleSelect().addValueChangeListener(event -> {
+            if(event.getValue() != null && event.getValue().getUser().equals(activeUser))
+                editIncome(event.getValue());
+        });
         incomeGrid.setItems(allIncomes);
     }
 

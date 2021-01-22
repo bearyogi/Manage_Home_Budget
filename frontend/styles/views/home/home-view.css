@@ -22,7 +22,7 @@
   font-size: 40px;
   color: #1F034D;
   transform: translateY(-300px);
-  animation: 2s slideInText ease-in-out forwards 1s;
+  animation: 1s slideInText ease-in-out forwards .5s;
   z-index: 10;
   opacity: 0;
   position: relative;
@@ -40,7 +40,7 @@
     background-image: url("images/homeImg.jpg");
     background-size: 100% 100%;
     transform: scale(.5);
-    animation: .5s slideIn ease-in-out forwards, 2s skewBg ease-in-out;
+    animation: .5s slideIn ease-in-out forwards, 1s skewBg ease-in-out;
 }
 
 @keyframes skewBg {
