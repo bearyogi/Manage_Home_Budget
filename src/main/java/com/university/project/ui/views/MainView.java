@@ -41,6 +41,7 @@ import java.util.Optional;
 /**
  * The main view is a top-level placeholder for other views.
  */
+
 @UIScope
 @JsModule("./styles/shared-styles.js")
 @CssImport("./styles/views/main/main-view.css")

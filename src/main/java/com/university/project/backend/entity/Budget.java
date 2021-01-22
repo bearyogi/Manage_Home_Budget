@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
@@ -22,10 +19,10 @@ public class Budget{
     @GeneratedValue
     private Integer budgetId;
 
-    @OneToMany(mappedBy = "budget")
+    @OneToMany(mappedBy = "budget",fetch = FetchType.EAGER)
     private Set<Expense> expenses;
 
-    @OneToMany(mappedBy = "budget")
+    @OneToMany(mappedBy = "budget",fetch = FetchType.EAGER)
     private Set<Income> incomes;
 
     @Override
