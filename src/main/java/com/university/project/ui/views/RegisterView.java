@@ -9,8 +9,11 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -54,7 +57,16 @@ public class RegisterView extends Composite {
                 new FormLayout.ResponsiveStep("32em", 2),
                 new FormLayout.ResponsiveStep("40em", 3));
 
-        VerticalLayout verticalLayout = new VerticalLayout(new H1("Join our bank"),
+        Button buttonGoBack = new Button("Go back", new Icon(VaadinIcon.ARROW_LEFT));
+        buttonGoBack.addClickListener(click -> {
+            UI.getCurrent().navigate("login");
+        });
+        H1 header = new H1("Kontroluj swoje wydatki z nami");
+        HorizontalLayout wrapperHeader = new HorizontalLayout(buttonGoBack, header);
+        wrapperHeader.addClassName("wrapper-layout");
+
+        VerticalLayout verticalLayout = new VerticalLayout(
+                wrapperHeader,
                 formLayout,
                 new Button("Sign up", e -> register(
                         username.getValue(),
@@ -66,7 +78,6 @@ public class RegisterView extends Composite {
                         phone.getValue()
                 )));
 
-        System.out.println("sdjjsd");
         verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         return verticalLayout;
