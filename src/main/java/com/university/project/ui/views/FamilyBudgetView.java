@@ -287,7 +287,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
             Grid<Income> inGrid = new Grid<>(Income.class);
                 userListIncome = selectedFamily.getBudget().getIncomes().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
-                userListIncome = new ArrayList<>();
 
             inGrid.addClassName("in-grid");
             //inGrid.setSizeFull();
@@ -306,9 +305,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
             hlUser.addClassName("text-total");
             incomeText = new H3(  "Przychody: " + allUserIncomes);
             hlText.add(expenseText,incomeText);
-            //exGrid.addClassName("grid-total");
-            //inGrid.addClassName("grid-total");
-            //hlGrid.addClassName("grid-total");
+            exGrid.addClassName("grid-total");
+            inGrid.addClassName("grid-total");
+            hlGrid.addClassName("grid-total");
             hlGrid.add(exGrid,inGrid);
 
             mainLayoutTotal.add(hlUser,hlText,hlGrid);
