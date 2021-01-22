@@ -258,6 +258,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
                 circle,
                 vlTotal
         );
+
         for(User user: selectedFamily.getUsers()){
             HorizontalLayout hlText = new HorizontalLayout();
             HorizontalLayout hlGrid = new HorizontalLayout();
@@ -267,7 +268,10 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
             allUserExpenses = 0;
             allUserIncomes = 0;
 
-           userListExpense = selectedFamily.getBudget().getExpenses().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
+            //if(!(selectedFamily.getBudget().getIncomes().iterator().next().getUser() == null)){
+                userListExpense = selectedFamily.getBudget().getExpenses().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
+
+
             Grid<Expense> exGrid = new Grid<>(Expense.class);
             exGrid.addClassName("ex-grid");
             exGrid.setColumns("name", "value", "expenseType", "date");
@@ -282,11 +286,8 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
             expenseText = new H3("Wydatki: " + allUserExpenses);
 
             Grid<Income> inGrid = new Grid<>(Income.class);
-            if(!(selectedFamily.getBudget().getIncomes().iterator().next().getUser() == null)){
                 userListIncome = selectedFamily.getBudget().getIncomes().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
-            }else{
                 userListIncome = new ArrayList<>();
-            }
 
             inGrid.addClassName("in-grid");
             //inGrid.setSizeFull();
@@ -305,7 +306,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
             hlUser.addClassName("text-total");
             incomeText = new H3(  "Przychody: " + allUserIncomes);
             hlText.add(expenseText,incomeText);
-
+            //exGrid.addClassName("grid-total");
+            //inGrid.addClassName("grid-total");
+            //hlGrid.addClassName("grid-total");
             hlGrid.add(exGrid,inGrid);
 
             mainLayoutTotal.add(hlUser,hlText,hlGrid);

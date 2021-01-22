@@ -51,6 +51,12 @@
     animation: fadeIn ease-in-out 2s;
 }
 
+.grid-total
+{
+    padding: 0px 0px 0px 0px;
+    margin: 0px 150px 0px 0px;
+}
+
 .show-div
 {
     animation: fadeIn ease-in-out 1s;
