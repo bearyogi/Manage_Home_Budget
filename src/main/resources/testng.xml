@@ -1,0 +1,43 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="ProjectSuite" time-out="10000" verbose="1">
+    <test name="ProjectTests">
+
+        <groups>
+            <define name="entity">
+                <include name="Budget"/>
+                <include name="Expense"/>
+                <include name="Income"/>
+                <include name="Family"/>
+                <include name="User"/>
+            </define>
+
+            <define name="form">
+                <include name="ExpenseForm"/>
+                <include name="IncomeForm"/>
+            </define>
+
+
+            <define name="ui">
+
+            </define>
+            <run>
+                <include name="entity"/>
+                <include name="form"/>
+                <include name="ui"/>
+            </run>
+        </groups>
+        <packages>
+            <package name="com.university.project.*"/>
+        </packages>
+        <classes>
+            <class name="com.university.project.entity.BudgetTest"/>
+            <class name="com.university.project.entity.ExpenseTest"/>
+            <class name="com.university.project.entity.FamilyTest"/>
+            <class name="com.university.project.entity.IncomeTest"/>
+            <class name="com.university.project.entity.UserTest"/>
+            <class name="com.university.project.form.ExpenseFormTest"/>
+            <class name="com.university.project.form.IncomeFormTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,16 @@
+#login-view {
+    display: grid;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    top: 20%;
+}
+
+:host {
+    display: block;
+    padding: var(--lumo-space-m) var(--lumo-space-l);
+}
+
+#login-view-password {
+    margin-bottom: 20px;
+}
