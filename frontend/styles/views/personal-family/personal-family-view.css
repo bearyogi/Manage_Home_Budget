@@ -54,8 +54,20 @@
 .grid-total
 {
     padding: 0px 0px 0px 0px;
-    margin: 0px 150px 0px 0px;
+    margin: 0px 150px;
 }
+
+.text-flex
+{
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    font: 20px 'Courier New', monospace;
+    animation: fadeIn ease-in-out 2s;
+    color: #D370F0;
+    font-weight: 600;
+}
+
 
 .show-div
 {

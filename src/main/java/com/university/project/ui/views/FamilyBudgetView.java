@@ -260,7 +260,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         );
 
         for(User user: selectedFamily.getUsers()){
-            HorizontalLayout hlText = new HorizontalLayout();
+            Div hlText = new Div();
             HorizontalLayout hlGrid = new HorizontalLayout();
             HorizontalLayout hlUser = new HorizontalLayout();
             hlText.setWidth("100%");
@@ -304,10 +304,12 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
             hlUser.add(userText);
             hlUser.addClassName("text-total");
             incomeText = new H3(  "Przychody: " + allUserIncomes);
+            incomeText.addClassName("text-flex");
+            expenseText.addClassName("text-flex");
             hlText.add(expenseText,incomeText);
+            hlText.addClassName("text-flex");
             exGrid.addClassName("grid-total");
             inGrid.addClassName("grid-total");
-            hlGrid.addClassName("grid-total");
             hlGrid.add(exGrid,inGrid);
 
             mainLayoutTotal.add(hlUser,hlText,hlGrid);
