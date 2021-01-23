@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
@@ -21,7 +22,10 @@ import java.util.Optional;
 @CssImport("./styles/views/home/home-view.css")
 public class HomeView extends Div {
     private final UserService userService;
-    private final H2 appName = new H2("Zarządzaj personalnym lub grupowym budżetem już teraz!");
+    private final Span textTop1 = new Span("Właściwe zarządzanie");
+    private final Span textTop2 = new Span("swoim budżetem");
+    private final Div textHome1 = new Div();
+    private final Div textHome2 = new Div();
 
     private User user;
 
@@ -30,31 +34,49 @@ public class HomeView extends Div {
 
         fetchFreshUser();
 
+        textHome1.add(textTop1,textTop2);
+        textHome2.setText("to podstawa!");
+
         setClassName("home-view");
+
+        setWidth("100%");
+        setHeight("100%");
+
+
 
         setUpLayoutWithUserCredentials();
         //createTabs();
     }
 
     private void setUpLayoutWithUserCredentials() {
-        VerticalLayout verticalLayout = new VerticalLayout();
-        verticalLayout.setClassName("layout-home");
+        Div container = new Div();
+        container.addClassName("back-home");
 
-        Div divContainer = new Div();
-        Div overlay = new Div();
+        Div titleAnimation = new Div();
+        Div top = new Div();
+        Div bot = new Div();
 
-        divContainer.addClassName("container-home");
-        appName.addClassName("style-appName");
-        overlay.addClassName("overlay-home");
+        titleAnimation.addClassName("animated-title");
+        top.addClassName("text-top");
+        bot.addClassName("text-bottom");
 
-        divContainer.add(appName,overlay);
+        top.add(textHome1);
+        bot.add(textHome2);
 
+        titleAnimation.add(top,bot);
 
-        verticalLayout.add(
-                divContainer
-        );
+        Div card = new Div();
 
-        add(verticalLayout);
+        card.setText("Zarządzaj personalnym oraz grupowym budżetem już teraz!");
+
+        card.setClassName("cardHome");
+
+        RouterLink routerLink = new RouterLink("Rozpocznij", PersonalBudgetView.class);
+        routerLink.setClassName("btn");
+        card.add(routerLink);
+
+        container.add(titleAnimation,card);
+        add(container);
     }
 
 

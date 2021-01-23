@@ -21,6 +21,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -213,6 +214,14 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     }
 
     private void setUpTotalLayout() {
+        List<Expense> userListExpense;
+        List<Income> userListIncome;
+        H3 expenseText;
+        H3 incomeText;
+
+        int allUserExpenses;
+        int allUserIncomes;
+
         updateIncomeTotalChartData();
         updateExpenseTotalChartData();
 
@@ -249,6 +258,63 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
                 circle,
                 vlTotal
         );
+
+        for(User user: selectedFamily.getUsers()){
+            Div hlText = new Div();
+            HorizontalLayout hlGrid = new HorizontalLayout();
+            HorizontalLayout hlUser = new HorizontalLayout();
+            hlText.setWidth("100%");
+            hlGrid.setWidth("100%");
+            allUserExpenses = 0;
+            allUserIncomes = 0;
+
+            //if(!(selectedFamily.getBudget().getIncomes().iterator().next().getUser() == null)){
+                userListExpense = selectedFamily.getBudget().getExpenses().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
+
+
+            Grid<Expense> exGrid = new Grid<>(Expense.class);
+            exGrid.addClassName("ex-grid");
+            exGrid.setColumns("name", "value", "expenseType", "date");
+            exGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+            exGrid.setItems(userListExpense);
+            exGrid.setHeight("50");
+            exGrid.setWidth("50%");
+            for(Expense ex: userListExpense){
+                allUserExpenses += ex.getValue();
+            }
+
+            expenseText = new H3("Wydatki: " + allUserExpenses);
+
+            Grid<Income> inGrid = new Grid<>(Income.class);
+                userListIncome = selectedFamily.getBudget().getIncomes().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
+
+            inGrid.addClassName("in-grid");
+            //inGrid.setSizeFull();
+            inGrid.setColumns("name", "value", "incomeType", "date");
+            inGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+            inGrid.setItems(userListIncome);
+            inGrid.setHeight("50");
+            inGrid.setWidth("50%");
+            for(Income in: userListIncome) {
+                allUserIncomes += in.getValue();
+            }
+
+            H2 userText = new H2(user.getFirstName() + " " + user.getLastName());
+            userText.addClassName("text-total");
+            hlUser.add(userText);
+            hlUser.addClassName("text-total");
+            incomeText = new H3(  "Przychody: " + allUserIncomes);
+            incomeText.addClassName("text-flex");
+            expenseText.addClassName("text-flex");
+            hlText.add(expenseText,incomeText);
+            hlText.addClassName("text-flex");
+            exGrid.addClassName("grid-total");
+            inGrid.addClassName("grid-total");
+            hlGrid.add(exGrid,inGrid);
+
+            mainLayoutTotal.add(hlUser,hlText,hlGrid);
+        }
+
     }
 
     private void updateBalance(){

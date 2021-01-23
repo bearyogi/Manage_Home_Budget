@@ -1,70 +1,121 @@
-.layout-home
+.back-home
 {
-    width: 100%;
-    height: 845px;
-    margin: 0;
-    padding: 0;
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    background-image: url("images/imgHome.png");
+    background-size: 100%, 100%;
+    overflow:hidden;
 }
 
-
-.container-home {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background-color: #C2FE8A;
-  justify-content: center;
+@keyframes showTopText {
+  0% { transform: translate3d(0, 100%, 0); }
+  40%, 60% { transform: translate3d(0, 50%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+@keyframes showBottomText {
+  0% { transform: translate3d(0, -100%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+.animated-title {
+  color:#407DEA;
   font-family: 'Courier New', monospace;
-  font-width:600;
-}
-
-.style-appName {
-  font-size: 40px;
-  color: #1F034D;
-  transform: translateY(-300px);
-  animation: 1s slideInText ease-in-out forwards .5s;
-  z-index: 10;
-  opacity: 0;
+  height: 50vh;
+  left: 26vw;
   position: relative;
+  font-weight: 600;
+  top: 45vh;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  width: 25vw;
+}
+.animated-title > div {
+  height: 50%;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+}
+.animated-title > div div {
+  font-size: 2vw;
+  padding: 0.5vw 0;
+  position: absolute;
+}
+.animated-title > div div span {
+  display: block;
+}
+.animated-title > div.text-top {
+  border-bottom: 0.15vw solid #407DEA;
+  top: 0;
+}
+.animated-title > div.text-top div {
+  animation: showTopText 1s;
+  animation-delay: 0.5s;
+  animation-fill-mode: forwards;
+  bottom: 0;
+  transform: translate(0, 100%);
+}
+.animated-title > div.text-top div span:first-child {
+  color:#6FA0F9;
+}
+.animated-title > div.text-bottom {
+  bottom: 0;
+}
+.animated-title > div.text-bottom div {
+  animation: showBottomText 0.5s;
+  animation-delay: 1.75s;
+  animation-fill-mode: forwards;
+  top: 0;
+  transform: translate(0, -100%);
 }
 
-.overlay-home {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    opacity: 0;
-    background-image: url("images/homeImg.jpg");
-    background-size: 100% 100%;
-    transform: scale(.5);
-    animation: .5s slideIn ease-in-out forwards, 1s skewBg ease-in-out;
+.cardHome {
+  box-shadow: 0 8px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  background: white;
+  opacity: 0.7;
+  left: 70vw;
+  position: absolute;
+  font-weight: 600;
+  top: 15vh;
+  width: 20vw;
+  border-radius: 10px;
+  padding: 25px;
+  font-size: 35px;
+  color:#0F1E25;
+  font-family: 'Courier New', monospace;
+  transform: translateY(-600px);
+  animation: 1.5s show ease-in-out forwards 2s;
 }
 
-@keyframes skewBg {
-  0% {
-    transform: scale(.5);
-  }
-  100% {
-    transform: scale(1);
-  }
+.cardHome:hover {
+  box-shadow: 0 16px 32px 0 rgba(0,0,0,0.2);
 }
 
-
-@keyframes slideIn {
+@keyframes show {
   100% {
     transform: translateY(0px);
-    opacity: 1;
   }
 }
 
-@keyframes slideInText {
-  100% {
-    transform: translateY(0px);
-    margin-top: 750px;
-    opacity: 1;
-  }
+.btn:link, .btn:visited{
+    background-color: purple;
+    border-radius: 25px;
+    border: 4px solid #FFFFFF;
+    color: #FFFFFF;
+    padding: 15px 32px;
+    text-align: center;
+    transition-duration: 0.2s;
+    text-decoration: none;
+    font-size: 25px;
+    font-weight:700;
+    cursor: pointer;
+    display: block;
+    margin-top:20px;
+}
+
+.btn:hover, .btn:active{
+    background-color: #FFFFFF;
+    color: purple;
+    border: 4px solid purple;
 }
 
