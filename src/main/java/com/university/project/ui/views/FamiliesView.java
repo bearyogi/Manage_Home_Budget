@@ -5,8 +5,6 @@ import com.university.project.backend.entity.Family;
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.FamilyService;
 import com.university.project.ui.components.MainViewBus;
-import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
@@ -17,7 +15,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -47,21 +44,15 @@ public class FamiliesView extends VerticalLayout {
     private void addButtons() {
         Button buttonAddFamily = new Button("Dodaj grupę", new Icon(VaadinIcon.PLUS_CIRCLE));
         buttonAddFamily.setIconAfterText(true);
-        buttonAddFamily.addClickListener(click -> {
-            showAddFamilyDialog();
-        });
+        buttonAddFamily.addClickListener(click -> showAddFamilyDialog());
 
         Button buttonJoinToFamily = new Button("Dołącz do grupy", new Icon(VaadinIcon.GROUP));
         buttonJoinToFamily.setIconAfterText(true);
-        buttonJoinToFamily.addClickListener(click -> {
-            tryAddUserToFamily();
-        });
+        buttonJoinToFamily.addClickListener(click -> tryAddUserToFamily());
 
         Button buttonDeleteFamily = new Button("Usuń grupę", new Icon(VaadinIcon.CLOSE));
         buttonDeleteFamily.setIconAfterText(true);
-        buttonDeleteFamily.addClickListener(click -> {
-           tryDeleteFamily();
-        });
+        buttonDeleteFamily.addClickListener(click -> tryDeleteFamily());
 
         add(new HorizontalLayout(buttonAddFamily, buttonJoinToFamily, buttonDeleteFamily));
     }
@@ -99,9 +90,7 @@ public class FamiliesView extends VerticalLayout {
 
 
 
-        Button cancelButton = new Button("Anuluj", event -> {
-            dialog.close();
-        });
+        Button cancelButton = new Button("Anuluj", event -> dialog.close());
 
         verticalLayout.add(new HorizontalLayout(confirmButton, cancelButton));
         verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);

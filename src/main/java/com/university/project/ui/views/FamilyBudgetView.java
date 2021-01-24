@@ -6,9 +6,6 @@ import com.university.project.backend.form.IncomeForm;
 import com.university.project.backend.service.ExpenseService;
 import com.university.project.backend.service.FamilyService;
 import com.university.project.backend.service.IncomeService;
-import com.university.project.backend.service.UserService;
-import com.university.project.ui.components.MainViewBus;
-import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
@@ -69,12 +66,12 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
     private final NumberField filterExpenseValue = new NumberField();
     private final TextField filterExpenseName = new TextField();
-    private final ComboBox filterExpenseType = new ComboBox();
+    private final ComboBox<ExpenseType> filterExpenseType = new ComboBox<>();
     private final DatePicker filterExpenseDate = new DatePicker();
 
     private final NumberField filterIncomeValue = new NumberField();
     private final TextField filterIncomeName = new TextField();
-    private final ComboBox filterIncomeType = new ComboBox();
+    private final ComboBox<IncomeType> filterIncomeType = new ComboBox<>();
     private final DatePicker filterIncomeDate = new DatePicker();
 
 
@@ -122,11 +119,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private final H4 incomeGift = new H4();
     private final H4 incomeReturn = new H4();
 
-    private H2 balanceLabel = new H2();
-    private H4 incomesLabel = new H4();
-    private H4 expensesLabel = new H4();
-
-    public FamilyBudgetView(MainViewBus mainViewBus) {
+    public FamilyBudgetView() {
         removeAll();
     }
 
@@ -237,9 +230,9 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         vlIncTotal.setWidth("50%");
 
         var balance = roundOff(totalIncomes - totalExpenses);
-        balanceLabel = new H2("Saldo " + (balance));
-        incomesLabel = new H4("Przychody " + totalIncomes);
-        expensesLabel = new H4("Wydatki " + totalExpenses);
+        H2 balanceLabel = new H2("Saldo " + (balance));
+        H4 incomesLabel = new H4("Przychody " + totalIncomes);
+        H4 expensesLabel = new H4("Wydatki " + totalExpenses);
 
         incomesLabel.addClassName("text-total");
         expensesLabel.addClassName("text-total");
@@ -740,7 +733,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak wydatków",1));
+        if (!flag) series.add(new DataSeriesItem("Brak wydatków",1));
         Configuration config = chartExpensesTotal.getConfiguration();
         config.setSeries(series);
         chartExpensesTotal.drawChart();
@@ -755,7 +748,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów",1));
+        if (!flag) series.add(new DataSeriesItem("Brak Przychodów",1));
         Configuration config = chartIncomesTotal.getConfiguration();
         config.setSeries(series);
         chartIncomesTotal.drawChart();

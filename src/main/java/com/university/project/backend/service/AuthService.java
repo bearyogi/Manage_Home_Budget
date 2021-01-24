@@ -69,10 +69,6 @@ public class AuthService {
             this.view = view;
         }
 
-        public String getRoute() {
-            return route;
-        }
-
         public String getName() {
             return name;
         }

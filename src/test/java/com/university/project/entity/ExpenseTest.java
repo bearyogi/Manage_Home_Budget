@@ -12,8 +12,8 @@ import static org.testng.Assert.assertEquals;
 
 @Test(groups = "Entity")
 public class ExpenseTest {
-    private Expense emptyExpense = new Expense();
-    private Expense fullExpense = new Expense();
+    private final Expense emptyExpense = new Expense();
+    private final Expense fullExpense = new Expense();
 
     @Test
     public void shouldCreateEmptyBudget(){
@@ -44,7 +44,7 @@ public class ExpenseTest {
         User user = new User();
 
         //When
-        Expense testExpense = new Expense(1,"1",Double.valueOf(1),ExpenseType.EDUCATION,LocalDate.of(1999,06,03),budget, user);
+        Expense testExpense = new Expense(1,"1",1.0,ExpenseType.EDUCATION,LocalDate.of(1999,6,3),budget, user);
 
         //Then
         assertEquals(testExpense,fullExpense,"Should create full expense, but did not.");
@@ -55,9 +55,9 @@ public class ExpenseTest {
         Budget budget = new Budget();
         fullExpense.setExpenseId(1);
         fullExpense.setBudget(budget);
-        fullExpense.setDate(LocalDate.of(1999,06,03));
+        fullExpense.setDate(LocalDate.of(1999,6,3));
         fullExpense.setExpenseType(ExpenseType.EDUCATION);
         fullExpense.setName("1");
-        fullExpense.setValue(Double.valueOf(1));
+        fullExpense.setValue(1.0);
     }
 }

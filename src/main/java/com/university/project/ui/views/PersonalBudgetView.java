@@ -5,9 +5,6 @@ import com.university.project.backend.form.ExpenseForm;
 import com.university.project.backend.form.IncomeForm;
 import com.university.project.backend.service.ExpenseService;
 import com.university.project.backend.service.IncomeService;
-import com.university.project.backend.service.UserService;
-import com.university.project.ui.components.MainViewBus;
-import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.charts.Chart;
@@ -43,7 +40,6 @@ import static com.university.project.utils.TransformUtils.*;
 @PageTitle("PersonalBudget")
 @CssImport("./styles/views/personal-family/personal-family-view.css")
 public class PersonalBudgetView extends Div {
-    private final UserService userService;
     private final User user = VaadinSession.getCurrent().getAttribute(User.class);
 
     private final ExpenseForm expenseForm = new ExpenseForm();
@@ -57,12 +53,12 @@ public class PersonalBudgetView extends Div {
 
     private final NumberField filterExpenseValue = new NumberField();
     private final TextField filterExpenseName = new TextField();
-    private final ComboBox filterExpenseType = new ComboBox();
+    private final ComboBox<ExpenseType> filterExpenseType = new ComboBox<>();
     private final DatePicker filterExpenseDate = new DatePicker();
 
     private final NumberField filterIncomeValue = new NumberField();
     private final TextField filterIncomeName = new TextField();
-    private final ComboBox filterIncomeType = new ComboBox();
+    private final ComboBox<IncomeType> filterIncomeType = new ComboBox<>();
     private final DatePicker filterIncomeDate = new DatePicker();
 
 
@@ -78,8 +74,8 @@ public class PersonalBudgetView extends Div {
     private final Button addExpenseButton = new Button("Dodaj wydatek", new Icon(VaadinIcon.ARROW_RIGHT));
     private final Button addIncomeButton = new Button("Dodaj przychód", new Icon(VaadinIcon.ARROW_LEFT));
 
-    private List<Double> listExpenses = new ArrayList<>();
-    private List<Double> listIncomes = new ArrayList<>();
+    private final List<Double> listExpenses = new ArrayList<>();
+    private final List<Double> listIncomes = new ArrayList<>();
     private double totalExpenses = 0.0;
     private double totalIncomes = 0.0;
 
@@ -110,14 +106,9 @@ public class PersonalBudgetView extends Div {
     private final H4 incomeGift = new H4();
     private final H4 incomeReturn = new H4();
 
-    private H2 balanceLabel = new H2();
-    private H4 incomesLabel = new H4();
-    private H4 expensesLabel = new H4();
-
-    public PersonalBudgetView(UserService userService, ExpenseService expenseService,
-                              IncomeService incomeService, MainViewBus mainViewBus) {
+    public PersonalBudgetView(ExpenseService expenseService,
+                              IncomeService incomeService) {
         addClassName("personal-view");
-        this.userService = userService;
         this.expenseService = expenseService;
         this.incomeService = incomeService;
 
@@ -210,9 +201,9 @@ public class PersonalBudgetView extends Div {
         vlIncTotal.setWidth("50%");
 
         var balance = roundOff(totalIncomes - totalExpenses);
-        balanceLabel = new H2("Saldo " + (balance));
-        incomesLabel = new H4("Przychody " + totalIncomes);
-        expensesLabel = new H4("Wydatki " + totalExpenses);
+        H2 balanceLabel = new H2("Saldo " + (balance));
+        H4 incomesLabel = new H4("Przychody " + totalIncomes);
+        H4 expensesLabel = new H4("Wydatki " + totalExpenses);
 
         incomesLabel.addClassName("text-total");
         expensesLabel.addClassName("text-total");
@@ -328,7 +319,7 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak wydatków", 1));
+        if (!flag) series.add(new DataSeriesItem("Brak wydatków", 1));
         Configuration config = chartExpenses.getConfiguration();
         config.setTitle("Rozkład wydatków względem typu:");
         config.setSeries(series);
@@ -344,7 +335,7 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak wydatków", 1));
+        if (!flag) series.add(new DataSeriesItem("Brak wydatków", 1));
         Configuration config = chartExpensesTotal.getConfiguration();
         config.setSeries(series);
         chartExpensesTotal.drawChart();
@@ -625,7 +616,7 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów", 1));
+        if (!flag) series.add(new DataSeriesItem("Brak Przychodów", 1));
         Configuration config = chartIncomes.getConfiguration();
         config.setTitle("Rozkład przychodow względem typu:");
         config.setSeries(series);
@@ -641,7 +632,7 @@ public class PersonalBudgetView extends Div {
                 flag = true;
             }
         }
-        if (flag == false) series.add(new DataSeriesItem("Brak Przychodów", 1));
+        if (!flag) series.add(new DataSeriesItem("Brak Przychodów", 1));
         Configuration config = chartIncomesTotal.getConfiguration();
         config.setSeries(series);
         chartIncomesTotal.drawChart();

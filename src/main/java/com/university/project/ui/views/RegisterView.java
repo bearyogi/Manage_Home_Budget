@@ -13,7 +13,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
@@ -24,7 +23,7 @@ import com.vaadin.flow.router.Route;
 @Route("register")
 @PageTitle("Register | BankAP")
 @CssImport("./styles/views/register/register-view.css")
-public class RegisterView extends Composite {
+public class RegisterView extends Composite<Component> {
     private final AuthService authService;
 
     public RegisterView(AuthService authService) {
@@ -57,9 +56,7 @@ public class RegisterView extends Composite {
                 new FormLayout.ResponsiveStep("40em", 3));
 
         Button buttonGoBack = new Button("Go back", new Icon(VaadinIcon.ARROW_LEFT));
-        buttonGoBack.addClickListener(click -> {
-            UI.getCurrent().navigate("login");
-        });
+        buttonGoBack.addClickListener(click -> UI.getCurrent().navigate("login"));
         H1 header = new H1("Kontroluj swoje wydatki z nami!");
         Div wrapperHeader = new Div(buttonGoBack, header);
         wrapperHeader.addClassName("wrapper-layout");
@@ -94,7 +91,7 @@ public class RegisterView extends Composite {
             Notification.show("Capitalize first letter in your firstname!");
         } else if(!lastName.matches("^[A-Z]([a-z])+$")) {
             Notification.show("Capitalize first letter in your lastname!");
-        } else if(!email.matches("^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$")){
+        } else if(!email.matches("^([a-zA-Z0-9_\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$")){
             Notification.show("Email is not correct!");
         }else if((phone.length() != 9)){
             Notification.show("Phone number must contain 9 digits!");

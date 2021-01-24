@@ -1,22 +1,19 @@
 package com.university.project.entity;
 
 import com.university.project.backend.entity.Budget;
-import com.university.project.backend.entity.Expense;
-import com.university.project.backend.entity.ExpenseType;
 import com.university.project.backend.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import java.time.LocalDate;
 
 import static org.testng.Assert.assertEquals;
 
 @Test(groups = "Entity")
 public class UserTest {
-    private User emptyUser = new User();
-    private User fullUser = new User();
-    private Budget budget = new Budget();
+    private final User emptyUser = new User();
+    private final User fullUser = new User();
+    private final Budget budget = new Budget();
 
     @Test
     public void shouldCreateEmptyBudget(){

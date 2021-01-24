@@ -2,13 +2,9 @@ package com.university.project.ui.views;
 
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.UserService;
-import com.university.project.ui.components.MainViewBus;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -43,7 +39,7 @@ public class CredentialsView extends HorizontalLayout {
     private final EmailField textFieldEmail = new EmailField("Nowy email");
     private final TextField textFieldPhone = new TextField("Nowy numer telefonu");
 
-    public CredentialsView(UserService userService, MainViewBus mainViewBus) {
+    public CredentialsView(UserService userService) {
         addClassName("credentials-view");
         this.userService = userService;
         setSizeFull();
@@ -109,9 +105,7 @@ public class CredentialsView extends HorizontalLayout {
 
         Button buttonChangeCredentials = new Button("Zmień dane");
         buttonChangeCredentials.setId("button-change-credentials");
-        buttonChangeCredentials.addClickListener(event -> {
-            updateUser();
-        });
+        buttonChangeCredentials.addClickListener(event -> updateUser());
 
         vlTextFields.add(
                 textFieldUsername,
@@ -165,7 +159,7 @@ public class CredentialsView extends HorizontalLayout {
         }
 
         if (textFieldEmail.getValue() != null && !textFieldEmail.isEmpty()){
-            if (textFieldEmail.getValue().matches("^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$")) {
+            if (textFieldEmail.getValue().matches("^([a-zA-Z0-9_\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$")) {
                 user.setEmail(textFieldEmail.getValue());
             } else {
                 Notification.show("Niepoprawny email!", 2500, Notification.Position.MIDDLE);
