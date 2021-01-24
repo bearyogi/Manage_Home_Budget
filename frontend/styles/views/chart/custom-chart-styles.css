@@ -3,10 +3,10 @@
 }
 
 :host .highcharts-title {
-  fill: black;
+  fill: #FF4500;
 }
 
 :host .highcharts-data-label text {
-  fill: black;
+  fill: #FF4500;
 }
 
