@@ -5,7 +5,6 @@ import com.university.project.backend.repository.UserRepository;
 import com.university.project.ui.views.*;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +15,14 @@ import java.util.List;
 
 @Service
 public class AuthService {
-    @Autowired
     private final UserRepository userRepository;
-    private static User user;
+
     public AuthService(@Autowired UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public void authenticate(String username, String password) throws AuthException {
-         user = userRepository.getByUsername(username);
+        User user = userRepository.getByUsername(username);
         if (user != null && user.checkPassword(password)) {
             VaadinSession.getCurrent().setAttribute(Constants.USER_ID, user.getId());
             VaadinSession.getCurrent().setAttribute(User.class, user);
@@ -33,9 +31,8 @@ public class AuthService {
             throw new AuthException();
         }
     }
-    public static User getUser(){
-        return user;
-    }
+
+
     private void createRoutes() {
         getAuthorizedRoutes()
                 .forEach(route ->

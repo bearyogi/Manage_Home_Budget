@@ -3,10 +3,12 @@ package com.university.project.ui.views;
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.UserService;
 import com.university.project.ui.components.MainViewBus;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -24,7 +26,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 @PageTitle("Credentials")
 public class CredentialsView extends HorizontalLayout {
 
-    private User user = VaadinSession.getCurrent().getAttribute(User.class);;
+    private User user = VaadinSession.getCurrent().getAttribute(User.class);
     private final UserService userService;
 
     private final Label labelUsername = new Label();

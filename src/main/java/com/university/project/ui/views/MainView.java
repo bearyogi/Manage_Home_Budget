@@ -1,6 +1,7 @@
 package com.university.project.ui.views;
 
 import com.university.project.backend.entity.Family;
+import com.university.project.backend.entity.User;
 import com.university.project.backend.service.AuthService;
 import com.university.project.backend.service.FamilyService;
 import com.university.project.ui.components.MainViewBus;
@@ -49,6 +50,8 @@ public class MainView extends AppLayout {
     private final Tabs tabs = new Tabs();
     private final AuthService authService;
     private final FamilyService familyService;
+    private final User user = VaadinSession.getCurrent().getAttribute(User.class);
+
 
     private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
@@ -139,7 +142,7 @@ public class MainView extends AppLayout {
     }
 
     private Tabs createMenu() {
-        cb.setItems(familyService.getAllByUser(AuthService.getUser()));
+        cb.setItems(familyService.getAllByUser(user));
         cb.setItemLabelGenerator(Family::getFamilyName);
         cb.addValueChangeListener(e -> {
             if (e.getValue() != null) {
@@ -163,7 +166,7 @@ public class MainView extends AppLayout {
     }
 
     public void updateCB() {
-        cb.setItems(familyService.getAllByUser(AuthService.getUser()));
+        cb.setItems(familyService.getAllByUser(user));
     }
 
     public void clearCB() {
