@@ -59,7 +59,7 @@ public class RegisterView extends Composite {
         buttonGoBack.addClickListener(click -> {
             UI.getCurrent().navigate("login");
         });
-        H1 header = new H1("Kontroluj swoje wydatki z nami");
+        H1 header = new H1("Kontroluj swoje wydatki z nami!");
         HorizontalLayout wrapperHeader = new HorizontalLayout(buttonGoBack, header);
         wrapperHeader.addClassName("wrapper-layout");
 
