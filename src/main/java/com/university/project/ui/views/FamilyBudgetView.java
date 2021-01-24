@@ -58,7 +58,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     @Autowired
     private IncomeService incomeService;
 
-    private final User user = VaadinSession.getCurrent().getAttribute(User.class);;
     private Family selectedFamily;
     private final User activeUser = VaadinSession.getCurrent().getAttribute(User.class);
 
@@ -140,9 +139,10 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private void setViewContent() {
         fetchAllFamilyExpenses();
         fetchAllFamilyIncomes();
+
         setUpTabs();
-        this.tabs.setSelectedTab(tabIncomes);
-        this.tabs.setSelectedTab(tabExpenses);
+        selectExpenseTabAtBeginning();
+
         setUpExpenseLayout();
         setUpIncomeLayout();
         setUpTotalLayout();
@@ -154,6 +154,30 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
     private void fetchAllFamilyIncomes() {
         allIncomes = incomeService.getAllByBudget(selectedFamily.getBudget());
+    }
+
+    private void setUpTabs() {
+        Map<Tab, Component> tabsToPages = new HashMap<>();
+        tabsToPages.put(tabExpenses, mainLayoutExpenses);
+        tabsToPages.put(tabIncomes, mainLayoutIncomes);
+        tabsToPages.put(tabTotal, mainLayoutTotal);
+
+        tabs.setWidthFull();
+        tabs.setFlexGrowForEnclosedTabs(1);
+        pages.setSizeFull();
+
+        tabs.addSelectedChangeListener(event -> {
+            tabsToPages.values().forEach(page -> page.setVisible(false));
+            Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
+            selectedPage.setVisible(true);
+        });
+        add(tabs, pages);
+
+    }
+
+    private void selectExpenseTabAtBeginning() {
+        tabs.setSelectedTab(tabIncomes);
+        tabs.setSelectedTab(tabExpenses);
     }
 
     private void setUpExpenseLayout() {
@@ -300,25 +324,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         setUpTotalLayout();
     }
 
-    private void setUpTabs() {
-        Map<Tab, Component> tabsToPages = new HashMap<>();
-        tabsToPages.put(tabExpenses, mainLayoutExpenses);
-        tabsToPages.put(tabIncomes, mainLayoutIncomes);
-        tabsToPages.put(tabTotal, mainLayoutTotal);
-
-        tabs.setWidthFull();
-        tabs.setFlexGrowForEnclosedTabs(1);
-        pages.setSizeFull();
-
-        tabs.addSelectedChangeListener(event -> {
-            tabsToPages.values().forEach(page -> page.setVisible(false));
-            Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
-            selectedPage.setVisible(true);
-        });
-        add(tabs, pages);
-
-    }
-
     private void configureExpenseGrid() {
         expenseGrid.addClassName("expense-grid");
         expenseGrid.setSizeFull();
@@ -430,7 +435,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private void saveExpense(ExpenseForm.SaveEvent evt) {
         Expense expenseToSave = evt.getExpense();
         expenseToSave.setBudget(selectedFamily.getBudget());
-        expenseToSave.setUser(user);
+        expenseToSave.setUser(activeUser);
         expenseService.save(expenseToSave);
 
         updateBalance();
@@ -550,7 +555,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private void saveIncome(IncomeForm.SaveEvent evt) {
         Income incomeToSave = evt.getIncome();
         incomeToSave.setBudget(selectedFamily.getBudget());
-        incomeToSave.setUser(user);
+        incomeToSave.setUser(activeUser);
         incomeService.save(incomeToSave);
 
         updateBalance();

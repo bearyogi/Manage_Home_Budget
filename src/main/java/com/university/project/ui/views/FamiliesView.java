@@ -110,6 +110,15 @@ public class FamiliesView extends VerticalLayout {
         dialog.open();
     }
 
+    private void fetchAllGroups() {
+        List<Family> families = familyService.getAll();
+        gridFamilies.setItems(families);
+    }
+
+    private void updateCBInMainView() {
+        mainViewBus.getMainView().updateCB();
+    }
+
     private void tryAddUserToFamily() {
         var selectedFamily = gridFamilies.getSelectionModel().getFirstSelectedItem();
         if (selectedFamily.isPresent()) {
@@ -153,10 +162,6 @@ public class FamiliesView extends VerticalLayout {
         return selectedFamily.getUsers().iterator().next().equals(activeUser);
     }
 
-    private void updateCBInMainView() {
-        mainViewBus.getMainView().updateCB();
-    }
-
 
     private void configureGrid() {
         gridFamilies.addClassName("families-grid");
@@ -166,10 +171,5 @@ public class FamiliesView extends VerticalLayout {
         gridFamilies.setSelectionMode(Grid.SelectionMode.SINGLE);
 
         add(gridFamilies);
-    }
-
-    private void fetchAllGroups() {
-        List<Family> families = familyService.getAll();
-        gridFamilies.setItems(families);
     }
 }
