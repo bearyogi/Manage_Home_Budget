@@ -13,8 +13,8 @@ import static org.testng.Assert.assertEquals;
 
 @Test(groups = "Entity")
 public class IncomeTest {
-    private Income emptyIncome = new Income();
-    private Income fullIncome = new Income();
+    private final Income emptyIncome = new Income();
+    private final Income fullIncome = new Income();
 
     @Test
     public void shouldCreateEmptyBudget(){
@@ -45,7 +45,7 @@ public class IncomeTest {
         User user = new User();
 
         //When
-        Income testExpense = new Income(1,"1",Double.valueOf(1), IncomeType.BONUS,LocalDate.of(1999,06,03),budget, user);
+        Income testExpense = new Income(1,"1",1.0, IncomeType.BONUS,LocalDate.of(1999,6,3),budget, user);
 
         //Then
         assertEquals(testExpense, fullIncome,"Should create full income, but did not.");
@@ -56,9 +56,9 @@ public class IncomeTest {
         Budget budget = new Budget();
         fullIncome.setIncomeId(1);
         fullIncome.setBudget(budget);
-        fullIncome.setDate(LocalDate.of(1999,06,03));
+        fullIncome.setDate(LocalDate.of(1999,6,3));
         fullIncome.setIncomeType(IncomeType.BONUS);
         fullIncome.setName("1");
-        fullIncome.setValue(Double.valueOf(1));
+        fullIncome.setValue(1.0);
     }
 }

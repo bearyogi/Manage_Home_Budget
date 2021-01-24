@@ -97,9 +97,7 @@ public class MainView extends AppLayout {
         contextMenu.addItem("Credentials",
                 e -> navigateToCredentials());
         contextMenu.addItem("Log Out",
-                e -> {
-                    logout();
-                });
+                e -> logout());
 
         layout.add(avatar);
         layout.add(toggleButton);

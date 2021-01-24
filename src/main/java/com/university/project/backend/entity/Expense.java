@@ -22,7 +22,6 @@ public class Expense{
     @Id
     @GeneratedValue
     private Integer expenseId;
-
     private String name;
     private Double value;
     private ExpenseType expenseType;

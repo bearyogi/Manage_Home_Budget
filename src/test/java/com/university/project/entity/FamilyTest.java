@@ -3,15 +3,14 @@ package com.university.project.entity;
 import com.university.project.backend.entity.*;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 import java.util.HashSet;
 import java.util.Set;
 import static org.testng.Assert.assertEquals;
 
 @Test(groups = "Entity")
 public class FamilyTest {
-    private Family emptyFamily = new Family();
-    private Family fullFamily = new Family();
+    private final Family emptyFamily = new Family();
+    private final Family fullFamily = new Family();
 
     @Test
     public void shouldCreateEmptyBudget(){

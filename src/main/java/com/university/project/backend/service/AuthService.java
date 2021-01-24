@@ -5,7 +5,6 @@ import com.university.project.backend.repository.UserRepository;
 import com.university.project.ui.views.*;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.server.VaadinSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +69,6 @@ public class AuthService {
             this.route = route;
             this.name = name;
             this.view = view;
-        }
-
-        public String getRoute() {
-            return route;
         }
 
         public String getName() {
