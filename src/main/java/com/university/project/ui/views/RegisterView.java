@@ -7,6 +7,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -60,7 +61,7 @@ public class RegisterView extends Composite {
             UI.getCurrent().navigate("login");
         });
         H1 header = new H1("Kontroluj swoje wydatki z nami!");
-        HorizontalLayout wrapperHeader = new HorizontalLayout(buttonGoBack, header);
+        Div wrapperHeader = new Div(buttonGoBack, header);
         wrapperHeader.addClassName("wrapper-layout");
 
         VerticalLayout verticalLayout = new VerticalLayout(

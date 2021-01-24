@@ -9,7 +9,18 @@
 .wrapper-layout {
     display:flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.wrapper-layout h1 {
+    margin-top: 0px;
+    margin-left: 20px;
+    margin-bottom: 0px;
+}
+
+.wrapper-layout vaadin-button {
+    margin-right: 30%;
 }
 
 
