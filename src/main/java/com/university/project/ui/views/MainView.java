@@ -4,6 +4,7 @@ import com.university.project.backend.entity.Family;
 import com.university.project.backend.service.AuthService;
 import com.university.project.backend.service.FamilyService;
 import com.university.project.ui.components.MainViewBus;
+import com.university.project.ui.components.ThemeHolder;
 import com.vaadin.componentfactory.ToggleButton;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -42,17 +43,23 @@ import com.vaadin.flow.theme.lumo.Lumo;
 public class MainView extends AppLayout {
 
     private final ComboBox<Family> cb = new ComboBox<>("Wybierz grupę");
+    private final ThemeHolder themeHolder = ThemeHolder.getInstance();
     private final Tabs menu;
     private final H1 viewTitle = new H1();
     private final Tabs tabs = new Tabs();
     private final AuthService authService;
     private final FamilyService familyService;
+
     private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-        if (themeList.contains(Lumo.DARK))
-            themeList.remove(Lumo.DARK);
-        else
+
+        if (click.getValue()) {
             themeList.add(Lumo.DARK);
+            themeHolder.setDarkTheme(true);
+        } else {
+            themeList.remove(Lumo.DARK);
+            themeHolder.setDarkTheme(false);
+        }
     });
 
     public MainView(AuthService authService, FamilyService familyService, MainViewBus mainViewBus) {
@@ -60,10 +67,17 @@ public class MainView extends AppLayout {
         this.authService = authService;
         mainViewBus.setMainView(this);
 
+        setUpToggleButton();
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
         addToDrawer(createDrawerContent(menu));
+    }
+
+    private void setUpToggleButton() {
+        if (themeHolder.isDarkTheme()) {
+            toggleButton.setValue(true);
+        }
     }
 
     private Component createHeaderContent() {

@@ -37,7 +37,7 @@ public class FamilyTest {
         Budget budget = new Budget();
 
         //When
-        Family testFamily = new Family(1,"test",budget,users);
+        Family testFamily = new Family(1,"test",0 ,budget,users);
 
         //Then
         assertEquals(testFamily,fullFamily,"Should create full family, but did not.");

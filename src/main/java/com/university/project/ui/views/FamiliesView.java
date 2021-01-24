@@ -87,6 +87,7 @@ public class FamiliesView extends VerticalLayout {
                 familyToSave.setFamilyName(textFamilyName.getValue());
                 familyToSave.setBudget(new Budget());
                 familyToSave.addUser(activeUser);
+                familyToSave.setOwnerId(activeUser.getId());
 
                 familyService.save(familyToSave);
                 fetchAllGroups();
@@ -159,7 +160,7 @@ public class FamiliesView extends VerticalLayout {
     }
 
     private boolean userIsFamilyOwner(Family selectedFamily) {
-        return selectedFamily.getUsers().iterator().next().equals(activeUser);
+        return selectedFamily.getOwnerId().equals(activeUser.getId());
     }
 
 

@@ -21,6 +21,8 @@ public class Family {
 
     private String familyName;
 
+    private Integer ownerId;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Budget budget;
 

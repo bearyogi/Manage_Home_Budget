@@ -1,6 +1,7 @@
 package com.university.project.ui.views;
 
 import com.university.project.backend.service.AuthService;
+import com.university.project.ui.components.ThemeHolder;
 import com.vaadin.componentfactory.ToggleButton;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -23,12 +24,22 @@ import com.vaadin.flow.theme.lumo.Lumo;
 @CssImport("./styles/views/login/login-view.css")
 public class LoginView extends Div {
 
+    private final ThemeHolder themeHolder = ThemeHolder.getInstance();
+    private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+
+        if (click.getValue()) {
+            themeList.add(Lumo.DARK);
+            themeHolder.setDarkTheme(true);
+        } else {
+            themeList.remove(Lumo.DARK);
+            themeHolder.setDarkTheme(false);
+        }
+    });
+
     public LoginView(AuthService authService) {
-        ToggleButton toggleButton = new ToggleButton("Przełącz ciemny tryb", click -> {
-            ThemeList themeList =  UI.getCurrent().getElement().getThemeList();
-            if(themeList.contains(Lumo.DARK)) themeList.remove(Lumo.DARK);
-            else themeList.add(Lumo.DARK);
-        });
+        setUpToggleButton();
+
         setId("login-view");
         setMinWidth("40%");
         setMaxWidth("30%");
@@ -52,6 +63,12 @@ public class LoginView extends Div {
                 }),
                 new RouterLink("Register", RegisterView.class)
         );
+    }
+
+    private void setUpToggleButton() {
+        if (themeHolder.isDarkTheme()) {
+            toggleButton.setValue(true);
+        }
     }
 
 }
