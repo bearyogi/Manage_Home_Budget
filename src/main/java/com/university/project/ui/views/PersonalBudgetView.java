@@ -39,6 +39,7 @@ import static com.university.project.utils.TransformUtils.*;
 @Route(value = "personal", layout = MainView.class)
 @PageTitle("PersonalBudget")
 @CssImport("./styles/views/personal-family/personal-family-view.css")
+@CssImport(value = "./styles/views/chart/custom-chart-styles.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
 public class PersonalBudgetView extends Div {
     private final User user = VaadinSession.getCurrent().getAttribute(User.class);
 

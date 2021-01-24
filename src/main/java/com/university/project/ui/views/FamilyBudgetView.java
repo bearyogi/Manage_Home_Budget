@@ -125,8 +125,12 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
     @Override
     public void setParameter(BeforeEvent beforeEvent, Integer id) {
-        selectedFamily = familyService.get(id).get();
+        fetchSelectedFamily(id);
         setViewContent();
+    }
+
+    private void fetchSelectedFamily(Integer id) {
+        selectedFamily = familyService.get(id).get();
     }
 
     private void setViewContent() {
@@ -263,8 +267,8 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
             allUserExpenses = 0;
             allUserIncomes = 0;
 
-            //if(!(selectedFamily.getBudget().getIncomes().iterator().next().getUser() == null)){
-                userListExpense = selectedFamily.getBudget().getExpenses().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
+
+            userListExpense = selectedFamily.getBudget().getExpenses().stream().filter(e -> e.getUser().equals(user)).collect(Collectors.toList());
 
 
             Grid<Expense> exGrid = new Grid<>(Expense.class);
@@ -314,6 +318,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
 
     private void updateBalance(){
         mainLayoutTotal.removeAll();
+        fetchSelectedFamily(selectedFamily.getFamilyId());
         setUpTotalLayout();
     }
 

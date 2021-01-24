@@ -1,0 +1,12 @@
+:host .highcharts-background {
+    fill: transparent;
+}
+
+:host .highcharts-title {
+  fill: black;
+}
+
+:host .highcharts-data-label text {
+  fill: black;
+}
+
