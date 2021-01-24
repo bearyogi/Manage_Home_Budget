@@ -6,6 +6,7 @@ import com.university.project.backend.form.IncomeForm;
 import com.university.project.backend.service.ExpenseService;
 import com.university.project.backend.service.IncomeService;
 import com.university.project.backend.service.UserService;
+import com.university.project.ui.components.MainViewBus;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -43,7 +44,7 @@ import static com.university.project.utils.TransformUtils.*;
 @CssImport("./styles/views/personal-family/personal-family-view.css")
 public class PersonalBudgetView extends Div {
     private final UserService userService;
-    private User user;
+    private final User user = VaadinSession.getCurrent().getAttribute(User.class);
 
     private final ExpenseForm expenseForm = new ExpenseForm();
     private final IncomeForm incomeForm = new IncomeForm();
@@ -113,14 +114,13 @@ public class PersonalBudgetView extends Div {
     private H4 incomesLabel = new H4();
     private H4 expensesLabel = new H4();
 
-    public PersonalBudgetView(UserService userService, ExpenseService expenseService, IncomeService incomeService) {
+    public PersonalBudgetView(UserService userService, ExpenseService expenseService,
+                              IncomeService incomeService, MainViewBus mainViewBus) {
         addClassName("personal-view");
-
-
         this.userService = userService;
         this.expenseService = expenseService;
         this.incomeService = incomeService;
-        fetchFreshUser();
+
         fetchAllUserExpenses();
         fetchAllUserIncomes();
 
@@ -661,27 +661,4 @@ public class PersonalBudgetView extends Div {
         incomeGrid.setItems(filteredList);
     }
 
-
-    private void fetchFreshUser() {
-        try {
-            fetchUserById();
-        } catch (UserNotFoundException e) {
-            System.out.println("User has not been found!");
-        }
-    }
-
-    private void fetchUserById() throws UserNotFoundException {
-        Integer userId = (Integer) VaadinSession.getCurrent().getAttribute(Constants.USER_ID);
-        Optional<User> fetchedUpdatedUser = userService.get(userId);
-        if (fetchedUpdatedUser.isPresent()) {
-            user = fetchedUpdatedUser.get();
-        } else {
-            throw new UserNotFoundException();
-        }
-    }
-
-
-    public static class UserNotFoundException extends Exception {
-
-    }
 }

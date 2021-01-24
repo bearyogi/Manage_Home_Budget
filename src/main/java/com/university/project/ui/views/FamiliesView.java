@@ -4,6 +4,7 @@ import com.university.project.backend.entity.Budget;
 import com.university.project.backend.entity.Family;
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.FamilyService;
+import com.university.project.ui.components.MainViewBus;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -29,11 +30,13 @@ import java.util.List;
 public class FamiliesView extends VerticalLayout {
     private final FamilyService familyService;
     private final User activeUser = VaadinSession.getCurrent().getAttribute(User.class);
+    private final MainViewBus mainViewBus;
 
     private final Grid<Family> gridFamilies = new Grid<>(Family.class);
 
-    public FamiliesView(FamilyService familyService) {
+    public FamiliesView(FamilyService familyService, MainViewBus mainViewBus) {
         this.familyService = familyService;
+        this.mainViewBus = mainViewBus;
         setSizeFull();
 
         addButtons();
@@ -54,7 +57,7 @@ public class FamiliesView extends VerticalLayout {
             tryAddUserToFamily();
         });
 
-        Button buttonDeleteFamily = new Button("Usuń grupę", new Icon(VaadinIcon.DEL));
+        Button buttonDeleteFamily = new Button("Usuń grupę", new Icon(VaadinIcon.CLOSE));
         buttonDeleteFamily.setIconAfterText(true);
         buttonDeleteFamily.addClickListener(click -> {
            tryDeleteFamily();
@@ -87,9 +90,8 @@ public class FamiliesView extends VerticalLayout {
 
                 familyService.save(familyToSave);
                 fetchAllGroups();
+                updateCBInMainView();
                 dialog.close();
-                UI.getCurrent().navigate(DummyView.class);
-                UI.getCurrent().navigate(FamiliesView.class);
 
             }
         });
@@ -118,6 +120,7 @@ public class FamiliesView extends VerticalLayout {
                 familyToUpdate.addUser(activeUser);
                 familyService.update(familyToUpdate);
                 fetchAllGroups();
+                updateCBInMainView();
                 Notification.show("Pomyślnie dodano do grupy!", 5000, Notification.Position.MIDDLE);
             }
         } else {
@@ -133,6 +136,7 @@ public class FamiliesView extends VerticalLayout {
                 if (userIsFamilyOwner(selFamily)) {
                     familyService.delete(selFamily);
                     fetchAllGroups();
+                    updateCBInMainView();
                     Notification.show("Grupa pomyślnie usunięta!", 2500, Notification.Position.MIDDLE);
                 } else {
                     Notification.show("Nie jesteś właścicielem grupy!", 2500, Notification.Position.MIDDLE);
@@ -147,6 +151,10 @@ public class FamiliesView extends VerticalLayout {
 
     private boolean userIsFamilyOwner(Family selectedFamily) {
         return selectedFamily.getUsers().iterator().next().equals(activeUser);
+    }
+
+    private void updateCBInMainView() {
+        mainViewBus.getMainView().updateCB();
     }
 
 

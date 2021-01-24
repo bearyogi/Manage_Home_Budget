@@ -7,6 +7,7 @@ import com.university.project.backend.service.ExpenseService;
 import com.university.project.backend.service.FamilyService;
 import com.university.project.backend.service.IncomeService;
 import com.university.project.backend.service.UserService;
+import com.university.project.ui.components.MainViewBus;
 import com.university.project.utils.Constants;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -57,10 +58,7 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     @Autowired
     private IncomeService incomeService;
 
-    @Autowired
-    private UserService userService;
-
-    private User user;
+    private final User user = VaadinSession.getCurrent().getAttribute(User.class);;
     private Family selectedFamily;
     private final User activeUser = VaadinSession.getCurrent().getAttribute(User.class);
 
@@ -129,19 +127,17 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
     private H4 incomesLabel = new H4();
     private H4 expensesLabel = new H4();
 
-    public FamilyBudgetView() {
+    public FamilyBudgetView(MainViewBus mainViewBus) {
         removeAll();
     }
 
     @Override
     public void setParameter(BeforeEvent beforeEvent, Integer id) {
-        //beforeEvent.getUI().removeAll();
         selectedFamily = familyService.get(id).get();
         setViewContent();
     }
 
     private void setViewContent() {
-        fetchFreshUser();
         fetchAllFamilyExpenses();
         fetchAllFamilyIncomes();
         setUpTabs();
@@ -150,24 +146,6 @@ public class FamilyBudgetView extends VerticalLayout implements HasUrlParameter<
         setUpExpenseLayout();
         setUpIncomeLayout();
         setUpTotalLayout();
-    }
-
-    private void fetchFreshUser() {
-        try {
-            fetchUserById();
-        } catch (PersonalBudgetView.UserNotFoundException e) {
-            System.out.println("User has not been found!");
-        }
-    }
-
-    private void fetchUserById() throws PersonalBudgetView.UserNotFoundException {
-        Integer userId = (Integer) VaadinSession.getCurrent().getAttribute(Constants.USER_ID);
-        Optional<User> fetchedUpdatedUser = userService.get(userId);
-        if (fetchedUpdatedUser.isPresent()) {
-            user = fetchedUpdatedUser.get();
-        } else {
-            throw new PersonalBudgetView.UserNotFoundException();
-        }
     }
 
     private void fetchAllFamilyExpenses() {

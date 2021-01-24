@@ -2,7 +2,8 @@ package com.university.project.ui.views;
 
 import com.university.project.backend.entity.User;
 import com.university.project.backend.service.UserService;
-import com.university.project.utils.Constants;
+import com.university.project.ui.components.MainViewBus;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.*;
@@ -18,17 +19,12 @@ import com.vaadin.flow.server.VaadinSession;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.Optional;
-
-import static com.university.project.ui.views.HomeView.*;
-
-
 @Route(value = "credentials", layout = MainView.class)
 @CssImport("./styles/views/credentials/credentials-view.css")
 @PageTitle("Credentials")
 public class CredentialsView extends HorizontalLayout {
 
-    private User user;
+    private User user = VaadinSession.getCurrent().getAttribute(User.class);;
     private final UserService userService;
 
     private final Label labelUsername = new Label();
@@ -45,33 +41,14 @@ public class CredentialsView extends HorizontalLayout {
     private final EmailField textFieldEmail = new EmailField("Nowy email");
     private final TextField textFieldPhone = new TextField("Nowy numer telefonu");
 
-    public CredentialsView(UserService userService) {
+    public CredentialsView(UserService userService, MainViewBus mainViewBus) {
         addClassName("credentials-view");
         this.userService = userService;
         setSizeFull();
-        fetchActiveUser();
 
         fillUpLabelsWithUserCredentials();
         setUpTextFields();
-        setUpLayout();
-    }
-
-    private void fetchActiveUser() {
-        try {
-            fetchUserById();
-        } catch (UserNotFoundException e) {
-            System.out.println("User has not been found!");
-        }
-    }
-
-    private void fetchUserById() throws UserNotFoundException {
-        Integer userId = (Integer) VaadinSession.getCurrent().getAttribute(Constants.USER_ID);
-        Optional<User> fetchedUpdatedUser = userService.get(userId);
-        if (fetchedUpdatedUser.isPresent()) {
-            user = fetchedUpdatedUser.get();
-        } else {
-            throw new UserNotFoundException();
-        }
+        setUpCards();
     }
 
     private void fillUpLabelsWithUserCredentials() {
@@ -86,36 +63,11 @@ public class CredentialsView extends HorizontalLayout {
         textFieldPhone.setPattern("[0-9]*");
         textFieldPhone.setPreventInvalidInput(true);
         textFieldPhone.setMaxLength(9);
-/*        textFieldPhone.addValueChangeListener(ev -> {
-            String currentName = ev.getValue();
-            if (currentName != null && !currentName.isEmpty()) {
-                if (currentName.length() != 9) {
-                    textFieldPhone.setErrorMessage("Wpisz 9 cyfr!");
-                    System.out.println(textFieldPhone.getErrorMessage());
-                }
-            }
-        });*/
 
         textFieldEmail.setErrorMessage("Wpisz poprawny email");
-
-/*        textFieldFirstName.addValueChangeListener(ev -> {
-            String currentName = ev.getValue();
-            if (currentName != null && !currentName.isEmpty()) {
-                if (!currentName.matches("^[A-Z]([a-z])+$"))
-                    textFieldFirstName.setErrorMessage("Imię z wielkiej litery!");
-            }
-        });
-
-        textFieldLastName.addValueChangeListener(ev -> {
-            String currentName = ev.getValue();
-            if (currentName != null && !currentName.isEmpty()) {
-                if (!currentName.matches("^[A-Z]([a-z])+$"))
-                    textFieldLastName.setErrorMessage("Nazwisko z wielkiej litery!");
-            }
-        });*/
     }
 
-    private void setUpLayout() {
+    private void setUpCards() {
 
         Div Layout = new Div();
         Layout.setClassName("flex");
@@ -210,9 +162,13 @@ public class CredentialsView extends HorizontalLayout {
             }
         }
 
-        if (textFieldEmail.getValue() != null && !textFieldEmail.isEmpty()
-                && textFieldEmail.getErrorMessage().isEmpty())
-            user.setEmail(textFieldEmail.getValue());
+        if (textFieldEmail.getValue() != null && !textFieldEmail.isEmpty()){
+            if (textFieldEmail.getValue().matches("^([a-zA-Z0-9_\\.\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$")) {
+                user.setEmail(textFieldEmail.getValue());
+            } else {
+                Notification.show("Niepoprawny email!", 2500, Notification.Position.MIDDLE);
+            }
+        }
 
         if (textFieldPhone.getValue() != null && !textFieldPhone.isEmpty()) {
             if (textFieldPhone.getValue().length() == 9) {
@@ -223,6 +179,8 @@ public class CredentialsView extends HorizontalLayout {
         }
 
         user = userService.update(user);
+        VaadinSession.getCurrent().setAttribute(User.class, user);
+
 
         fillUpLabelsWithUserCredentials();
         clearTextFields();
@@ -234,6 +192,9 @@ public class CredentialsView extends HorizontalLayout {
         textFieldUsername.clear();
         textFieldEmail.clear();
         textFieldPhone.clear();
+        textFieldEmail.setErrorMessage(null);
+        textFieldEmail.setValue("");
     }
+
 
 }

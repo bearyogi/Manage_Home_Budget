@@ -3,6 +3,7 @@ package com.university.project.ui.views;
 import com.university.project.backend.entity.Family;
 import com.university.project.backend.service.AuthService;
 import com.university.project.backend.service.FamilyService;
+import com.university.project.ui.components.MainViewBus;
 import com.vaadin.componentfactory.ToggleButton;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -15,7 +16,6 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -26,16 +26,9 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.spring.annotation.UIScope;
-import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import com.vaadin.flow.theme.lumo.Lumo;
-import lombok.SneakyThrows;
-
-import java.net.URI;
-import java.util.Optional;
 
 
 /**
@@ -48,12 +41,12 @@ import java.util.Optional;
 @PWA(name = "PersonalBudget", shortName = "Budget", enableInstallPrompt = false)
 public class MainView extends AppLayout {
 
-    public ComboBox<Family> cb;
+    private final ComboBox<Family> cb = new ComboBox<>("Wybierz grupę");
     private final Tabs menu;
-    private H1 viewTitle;
+    private final H1 viewTitle = new H1();
     private final Tabs tabs = new Tabs();
     private final AuthService authService;
-    private static FamilyService familyService;
+    private final FamilyService familyService;
     private final ToggleButton toggleButton = new ToggleButton("Ciemny tryb", click -> {
         ThemeList themeList = UI.getCurrent().getElement().getThemeList();
         if (themeList.contains(Lumo.DARK))
@@ -62,10 +55,11 @@ public class MainView extends AppLayout {
             themeList.add(Lumo.DARK);
     });
 
-    public MainView(AuthService authService, FamilyService familyService) {
-        this.cb = new ComboBox<>("Wybierz grupę");
+    public MainView(AuthService authService, FamilyService familyService, MainViewBus mainViewBus) {
         this.familyService = familyService;
         this.authService = authService;
+        mainViewBus.setMainView(this);
+
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
@@ -80,7 +74,6 @@ public class MainView extends AppLayout {
         layout.setSpacing(false);
         layout.setAlignItems(FlexComponent.Alignment.CENTER);
         layout.add(new DrawerToggle());
-        viewTitle = new H1();
         layout.add(viewTitle);
 
         Image avatar = new Image("images/user.svg", "Avatar");
@@ -102,6 +95,11 @@ public class MainView extends AppLayout {
     private void navigateToCredentials() {
         tabs.setSelectedIndex(1);
         UI.getCurrent().navigate(CredentialsView.class);
+    }
+
+    public void navigateAndSelectTabInMainView(int index, Class<? extends Component> navigationTarget) {
+        tabs.setSelectedIndex(index);
+        UI.getCurrent().navigate(navigationTarget);
     }
 
     private void logout() {
@@ -150,11 +148,11 @@ public class MainView extends AppLayout {
         return tabs;
     }
 
-    public  void updateCB(){
+    public void updateCB() {
         cb.setItems(familyService.getAllByUser(AuthService.getUser()));
     }
 
-    public  void clearCB() {
+    public void clearCB() {
         cb.clear();
     }
 
@@ -162,7 +160,7 @@ public class MainView extends AppLayout {
         menu.setSelectedTab(null);
         UI.getCurrent().navigate(HomeView.class);
         UI.getCurrent().navigate(FamilyBudgetView.class, selectedFamily);
-   }
+    }
 
     private Component[] createMenuItems() {
         return authService.getAuthorizedRoutes().stream()
@@ -182,9 +180,6 @@ public class MainView extends AppLayout {
     protected void afterNavigation() {
         super.afterNavigation();
         viewTitle.setText(getCurrentPageTitle());
-      if(getCurrentPageTitle().equals("Families")){
-          updateCB();
-      }
     }
 
     private String getCurrentPageTitle() {
