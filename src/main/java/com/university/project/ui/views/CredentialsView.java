@@ -143,7 +143,7 @@ public class CredentialsView extends HorizontalLayout {
         }
 
         if (textFieldFirstName.getValue() != null && !textFieldFirstName.isEmpty()) {
-            if (textFieldFirstName.getValue().matches("^[A-Z]([a-z])+$")) {
+            if (Character.isUpperCase(textFieldFirstName.getValue().charAt(0))) {
                 user.setFirstName(textFieldFirstName.getValue());
             } else {
                 Notification.show("Imię powinno być z wielkiej litery!", 2500, Notification.Position.MIDDLE);
@@ -151,7 +151,7 @@ public class CredentialsView extends HorizontalLayout {
         }
 
         if (textFieldLastName.getValue() != null && !textFieldLastName.isEmpty()) {
-            if (textFieldLastName.getValue().matches("^[A-Z]([a-z])+$")) {
+            if (Character.isUpperCase(textFieldLastName.getValue().charAt(0))) {
                 user.setLastName(textFieldLastName.getValue());
             } else {
                 Notification.show("Nazwisko powinno być z wielkiej litery!", 2500, Notification.Position.MIDDLE);

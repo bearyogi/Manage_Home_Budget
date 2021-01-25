@@ -87,20 +87,24 @@ public class RegisterView extends Composite<Component> {
             Notification.show("Enter a password");
         } else if(!password.equals(confirmPassword)) {
             Notification.show("Passwords don't match!");
-        } else if(!firstName.matches("^[A-Z]([a-z])+$")) {
+        } else if(firstName.isEmpty()) {
+            Notification.show("Empty firstname!");
+        } else if(lastName.isEmpty()) {
+            Notification.show("Empty lastName!");
+        } else if(!Character.isUpperCase(firstName.charAt(0))) {
             Notification.show("Capitalize first letter in your firstname!");
-        } else if(!lastName.matches("^[A-Z]([a-z])+$")) {
+        } else if(!Character.isUpperCase(lastName.charAt(0))) {
             Notification.show("Capitalize first letter in your lastname!");
         } else if(!email.matches("^([a-zA-Z0-9_\\-+])+@[a-zA-Z0-9-.]+\\.[a-zA-Z0-9-]{2,}$")){
             Notification.show("Email is not correct!");
         }else if((phone.length() != 9)){
-            Notification.show("Phone number must contain 9 digits!");
+            Notification.show("Phone number must consist of 9 digits!");
         }
         else {
             authService.register(username, password, firstName, lastName, email, phone);
             Notification.show("Registration succeeded.");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
