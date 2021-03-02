@@ -44,7 +44,7 @@ It also provides "families budgets" which basically means budget for groups of p
 * attractive and simple design
 * add, modify, delete expenses and incomes
 * create and join families
-* track all data shown of charts
+* track all data shown on charts
 * see tables with all data
 
 ## Mysql configuration
