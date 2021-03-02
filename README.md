@@ -16,16 +16,16 @@ It also provides "families budgets" which basically means budget for groups of p
 
 ## Screenshots
 <p align="left">
-  <img src="./img/img1.png" height="500" width="800" alt="Img1">
-  <img src="./img/img2.png" height="500" width="800" alt="Img2">
-  <img src="./img/img3.png" height="500" width="800" alt="Img3">
-  <img src="./img/img4.png" height="500" width="800" alt="Img4">
-  <img src="./img/img5.png" height="500" width="800" alt="Img5">
-  <img src="./img/img6.png" height="500" width="800" alt="Img6">
-  <img src="./img/img7.png" height="500" width="800" alt="Img7">
-  <img src="./img/img8.png" height="500" width="800" alt="Img8">
-  <img src="./img/img10.png" height="500" width="800" alt="Img10">
-  <img src="./img/img9.png" height="500" width="800" alt="Img9">
+  <img src="./img/img1.png" height="350" width="800" alt="Img1">
+  <img src="./img/img2.png" height="350" width="800" alt="Img2">
+  <img src="./img/img3.png" height="350" width="800" alt="Img3">
+  <img src="./img/img4.png" height="350" width="800" alt="Img4">
+  <img src="./img/img5.png" height="350" width="800" alt="Img5">
+  <img src="./img/img6.png" height="350" width="800" alt="Img6">
+  <img src="./img/img7.png" height="350" width="800" alt="Img7">
+  <img src="./img/img8.png" height="350" width="800" alt="Img8">
+  <img src="./img/img10.png" height="350" width="800" alt="Img10">
+  <img src="./img/img9.png" height="350" width="800" alt="Img9">
 </p>
 
 ## Techstack:
